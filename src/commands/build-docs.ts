@@ -1,3 +1,5 @@
+import { buildDocs } from '../docs/build-docs.js';
+
 export interface BuildDocsOptions {
   profile?: string;
 }
@@ -8,8 +10,19 @@ export async function runBuildDocsCommand(
   outputDirectory: string,
   options: BuildDocsOptions = {}
 ): Promise<void> {
-  console.log(`Building docs from ${jsonFile} using theme ${themeName} into ${outputDirectory}`);
-  if (options.profile) {
-    console.log(`Using profile: ${options.profile}`);
-  }
+  const result = await buildDocs({
+    generatedJsonFile: jsonFile,
+    themeName,
+    outputDirectory,
+    profileName: options.profile,
+  });
+
+  // Extract just the directory name from the full path
+  const dirName = result.outputDirectory.split('/').pop() || result.outputDirectory;
+
+  console.log(`Documents written to ${outputDirectory.replace(/\/[^/]+$/, '/' + dirName)}`);
+  console.log('Generated files:');
+  result.files.forEach((file) => {
+    console.log(`- ${file}`);
+  });
 }

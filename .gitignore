@@ -4,6 +4,10 @@ node_modules/
 # Build output
 dist/
 
+
+#Content generation
+output/*
+
 # Private user profile and resumes
 user-info/profile.json
 user-info/resumes/*.md
@@ -34,3 +38,5 @@ coverage/
 # Temporary files
 *.tmp
 .temp/
+
+

@@ -1,0 +1,16 @@
+{
+  "resume": "# Tailored Resume for Software Engineer Position\n\n## Professional Summary\nExperienced software engineer with expertise in full-stack development and a passion for building scalable applications.",
+  "coverLetter": {
+    "greeting": "Dear Hiring Manager,",
+    "paragraphs": [
+      "I am writing to express my strong interest in the Software Engineer position at your company. With my background in developing robust web applications and leading cross-functional teams, I am confident in my ability to contribute to your engineering organization.",
+      "In my current role, I have successfully led the development of microservices architecture that serves over 1 million users. I have a proven track record of delivering high-quality code while mentoring junior developers and fostering a collaborative team environment.",
+      "I am particularly drawn to this opportunity because of your company's focus on innovation and engineering excellence. I believe my experience in cloud-native development and my passion for solving complex technical challenges make me an ideal candidate for this role."
+    ],
+    "closing": "Thank you for considering my application. I look forward to the opportunity to discuss how my skills and experience align with your needs."
+  },
+  "jobTitle": "Software Engineer",
+  "companyName": "Tech Innovators Inc",
+  "generatedAt": "2024-01-15T10:30:00Z",
+  "notes": "Emphasized cloud-native experience and team leadership."
+}

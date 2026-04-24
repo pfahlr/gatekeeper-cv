@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cover Letter - {{ profile.name }}</title>
+  <link rel="stylesheet" href="../styles/cover_letter.css">
+</head>
+<body>
+  <div class="cover-letter-container">
+    <header class="cover-letter-header">
+      <p class="letter-meta">{{ profile.name }}</p>
+      {% if profile.email %}
+      <p class="letter-meta">{{ profile.email }}</p>
+      {% endif %}
+      {% if profile.phone %}
+      <p class="letter-meta">{{ profile.phone }}</p>
+      {% endif %}
+      {% if profile.location %}
+      <p class="letter-meta">{{ profile.location }}</p>
+      {% endif %}
+      <p class="letter-meta">{% if metadata.generatedAt %}{{ metadata.generatedAt | date: "%B %d, %Y" }}{% else %}{{ build.timestamp | date: "%B %d, %Y" }}{% endif %}</p>
+    </header>
+
+    <main class="cover-letter-content">
+      {% if coverLetter.greeting %}
+      <p class="greeting">{{ coverLetter.greeting }}</p>
+      {% else %}
+      <p class="greeting">Dear Hiring Manager,</p>
+      {% endif %}
+
+      {% for paragraph in coverLetter.paragraphs %}
+      <p class="letter-paragraph">{{ paragraph }}</p>
+      {% endfor %}
+
+      {% if coverLetter.closing %}
+      <p class="closing">{{ coverLetter.closing }}</p>
+      {% else %}
+      <p class="closing">Sincerely,</p>
+      {% endif %}
+
+      <p class="signature">{{ profile.name }}</p>
+    </main>
+
+    <footer class="cover-letter-footer">
+      <p><em>Application for: {{ metadata.jobTitle }}</em>{% if metadata.companyName %} at {{ metadata.companyName }}{% endif %}</p>
+    </footer>
+  </div>
+</body>
+</html>
