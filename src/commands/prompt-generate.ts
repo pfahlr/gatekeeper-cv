@@ -6,6 +6,9 @@ import { loadJobSitesConfig } from '../config/load-job-sites-config.js';
 import { findJobSiteConfigForUrl } from '../job-posts/domain-config.js';
 import { parseJobPost } from '../job-posts/parse-job-post.js';
 import { fallbackExtractJobPost, isWeakExtraction } from '../job-posts/fallback-extract-job-post.js';
+import { buildResumeCoverLetterPrompt } from '../prompts/build-resume-cover-letter-prompt.js';
+import { resolvePromptPreferences } from '../config/resolve-prompt-preferences.js';
+import { writeFile } from 'node:fs/promises';
 
 export interface PromptGenerateOptions {
   profile?: string;
@@ -16,26 +19,15 @@ export async function runPromptGenerateCommand(
   jobPostUrl: string,
   options: PromptGenerateOptions = {}
 ): Promise<void> {
-  console.log(`Generating prompt for: ${jobPostUrl}`);
-
   const { config } = await loadUserProfileConfig();
   const { name: profileName, profile } = resolveProfile(config, options.profile);
-  console.log(`Using profile: ${profileName}`);
 
   const resume = await loadUserResumeMarkdown(profile);
-  console.log(`Loaded resume: ${resume.length} characters`);
 
   const jobSitesConfig = await loadJobSitesConfig();
   const matchedSite = findJobSiteConfigForUrl(jobPostUrl, jobSitesConfig);
 
-  if (matchedSite) {
-    console.log(`Matched job site config: ${matchedSite.matchedDomain}`);
-  } else {
-    console.log('No job site config matched. Fallback extraction will be used.');
-  }
-
   const pageHtml = await fetchPage(jobPostUrl);
-  console.log(`Fetched page: ${pageHtml.length} characters`);
 
   let extractedJob = parseJobPost({
     url: jobPostUrl,
@@ -46,26 +38,46 @@ export async function runPromptGenerateCommand(
 
   // Check if extraction is weak and use fallback if needed
   if (!matchedSite || isWeakExtraction(extractedJob)) {
-    if (matchedSite) {
-      console.log('Configured extraction was weak. Using fallback extraction.');
-    }
     extractedJob = fallbackExtractJobPost({
       url: jobPostUrl,
       html: pageHtml,
     });
   }
 
-  console.log(`Title: ${extractedJob.title}`);
-  if (extractedJob.company) {
-    console.log(`Company: ${extractedJob.company}`);
-  }
-  if (extractedJob.location) {
-    console.log(`Location: ${extractedJob.location}`);
-  }
-  console.log(`Description length: ${extractedJob.description.length} characters`);
-  console.log(`Raw text length: ${(extractedJob.rawText || '').length} characters`);
+  // Resolve prompt preferences for the selected profile
+  const promptPreferences = resolvePromptPreferences(profile.promptPreferences);
 
+  // Build the prompt
+  const prompt = buildResumeCoverLetterPrompt({
+    extractedJob,
+    profile: config,
+    selectedProfileName: profileName,
+    resumeMarkdown: resume,
+    promptPreferences,
+  });
+
+  // Output
   if (options.out) {
-    console.log(`Prompt output file: ${options.out}`);
+    // Write to file
+    await writeFile(options.out, prompt, 'utf-8');
+    // Status messages go to stderr
+    console.error(`Generating prompt for: ${jobPostUrl}`);
+    console.error(`Using profile: ${profileName}`);
+    console.error(`Loaded resume: ${resume.length} characters`);
+    console.error(`Matched job site config: ${matchedSite?.matchedDomain || 'fallback'}`);
+    console.error(`Fetched page: ${pageHtml.length} characters`);
+    console.error(`Title: ${extractedJob.title}`);
+    if (extractedJob.company) {
+      console.error(`Company: ${extractedJob.company}`);
+    }
+    if (extractedJob.location) {
+      console.error(`Location: ${extractedJob.location}`);
+    }
+    console.error(`Description length: ${extractedJob.description.length} characters`);
+    console.error(`Raw text length: ${(extractedJob.rawText || '').length} characters`);
+    console.error(`Prompt written to ${options.out}`);
+  } else {
+    // Print to stdout
+    console.log(prompt);
   }
 }

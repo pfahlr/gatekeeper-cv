@@ -98,6 +98,41 @@ vi.mock('../../src/job-posts/fallback-extract-job-post.js', () => ({
   isWeakExtraction: vi.fn(() => false),
 }));
 
+vi.mock('../../src/prompts/build-resume-cover-letter-prompt.js', () => ({
+  buildResumeCoverLetterPrompt: vi.fn(() => 'Generated prompt content'),
+}));
+
+vi.mock('../../src/config/resolve-prompt-preferences.js', () => ({
+  resolvePromptPreferences: vi.fn(() => ({
+    tone: 'professional',
+    targetRoleTypes: [],
+    industriesToEmphasize: [],
+    skillsToEmphasize: [],
+    skillsToAvoidOverstating: [],
+    experienceToEmphasize: [],
+    experienceToDeemphasize: [],
+    jobTypesToPrioritize: [],
+    jobTypesToDeprioritize: [],
+    coverLetterGuidance: {
+      openingStyle: 'direct',
+      includePersonalMotivation: false,
+      avoidGenericPraise: true,
+      preferredLength: 'medium',
+    },
+    resumeGuidance: {
+      summaryStyle: 'specific',
+      bulletStyle: 'achievement_oriented',
+      maxBulletLength: 'medium',
+      prioritizeKeywords: true,
+    },
+    customInstructions: [],
+  })),
+}));
+
+vi.mock('node:fs/promises', () => ({
+  writeFile: vi.fn(() => Promise.resolve()),
+}));
+
 describe('prompt-generate command', () => {
   it('should handle basic invocation with url', async () => {
     await runPromptGenerateCommand('https://example.com/job');
