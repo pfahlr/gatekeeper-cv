@@ -15,7 +15,18 @@ describe('buildDocs', () => {
     await writeFile(
       jsonFile,
       JSON.stringify({
-        resume: '# Resume',
+        resume: {
+          skills: ['JavaScript', 'TypeScript'],
+          experience: [
+            {
+              company: 'Tech Corp',
+              title: 'Developer',
+              startDate: '2020-01-01T00:00:00Z',
+              endDate: null,
+              bullets: ['Built things'],
+            },
+          ],
+        },
         coverLetter: {
           paragraphs: ['Dear Hiring Manager,'],
         },
@@ -45,7 +56,10 @@ describe('buildDocs', () => {
     await writeFile(
       jsonFile,
       JSON.stringify({
-        resume: '# Resume',
+        resume: {
+          skills: [],
+          experience: [],
+        },
         coverLetter: {
           paragraphs: [],
         },

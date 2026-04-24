@@ -3,7 +3,10 @@ import { generatedContentSchema } from '../../src/schemas/generated-content.sche
 
 describe('generated-content schema', () => {
   const minimalContent = {
-    resume: 'Resume content here',
+    resume: {
+      skills: ['JavaScript', 'TypeScript'],
+      experience: [],
+    },
     coverLetter: {
       paragraphs: ['First paragraph', 'Second paragraph'],
     },
@@ -16,7 +19,27 @@ describe('generated-content schema', () => {
 
   it('should accept content with all optional fields', () => {
     const fullContent = {
-      resume: 'Resume content here',
+      resume: {
+        summary: 'Experienced developer',
+        skills: ['JavaScript', 'TypeScript'],
+        experience: [
+          {
+            company: 'Acme Corp',
+            title: 'Senior Developer',
+            startDate: '2020-01-01T00:00:00Z',
+            endDate: null,
+            bullets: ['Led development'],
+          },
+        ],
+        education: [
+          {
+            institution: 'University',
+            degree: 'BS Computer Science',
+            startDate: '2014-09-01T00:00:00Z',
+            endDate: '2018-05-15T00:00:00Z',
+          },
+        ],
+      },
       coverLetter: {
         paragraphs: ['First paragraph'],
         greeting: 'Dear Hiring Manager,',
@@ -43,7 +66,10 @@ describe('generated-content schema', () => {
 
   it('should require coverLetter field', () => {
     const invalidContent = {
-      resume: 'Resume content',
+      resume: {
+        skills: [],
+        experience: [],
+      },
     };
     const result = generatedContentSchema.safeParse(invalidContent);
     expect(result.success).toBe(false);
@@ -51,7 +77,10 @@ describe('generated-content schema', () => {
 
   it('should require coverLetter.paragraphs', () => {
     const invalidContent = {
-      resume: 'Resume content',
+      resume: {
+        skills: [],
+        experience: [],
+      },
       coverLetter: {},
     };
     const result = generatedContentSchema.safeParse(invalidContent);
@@ -60,12 +89,63 @@ describe('generated-content schema', () => {
 
   it('should accept empty paragraphs array', () => {
     const content = {
-      resume: 'Resume content',
+      resume: {
+        skills: [],
+        experience: [],
+      },
       coverLetter: {
         paragraphs: [],
       },
     };
     const result = generatedContentSchema.safeParse(content);
     expect(result.success).toBe(true);
+  });
+
+  it('should require resume.skills', () => {
+    const invalidContent = {
+      resume: {
+        experience: [],
+      },
+      coverLetter: {
+        paragraphs: [],
+      },
+    };
+    const result = generatedContentSchema.safeParse(invalidContent);
+    expect(result.success).toBe(false);
+  });
+
+  it('should require resume.experience', () => {
+    const invalidContent = {
+      resume: {
+        skills: [],
+      },
+      coverLetter: {
+        paragraphs: [],
+      },
+    };
+    const result = generatedContentSchema.safeParse(invalidContent);
+    expect(result.success).toBe(false);
+  });
+
+  it('should validate datetime format for dates', () => {
+    const invalidContent = {
+      resume: {
+        skills: [],
+        experience: [
+          {
+            company: 'Acme Corp',
+            title: 'Developer',
+            startDate: 'not-a-datetime',
+            endDate: null,
+            bullets: [],
+          },
+        ],
+      },
+      coverLetter: {
+        paragraphs: [],
+      },
+    };
+    const result = generatedContentSchema.safeParse(invalidContent);
+    expect(result.success).toBe(false);
   });
 });

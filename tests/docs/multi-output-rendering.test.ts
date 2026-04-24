@@ -23,7 +23,19 @@ describe('multi-output-rendering', () => {
     jsonFile = join(fixturesDir, 'content.json');
 
     validJsonContent = JSON.stringify({
-      resume: '# Resume Content\n\n## Experience\nSoftware engineer with experience.',
+      resume: {
+        summary: 'Software engineer with experience.',
+        skills: ['JavaScript', 'TypeScript', 'Node.js'],
+        experience: [
+          {
+            company: 'Tech Company',
+            title: 'Software Engineer',
+            startDate: '2020-01-01T00:00:00Z',
+            endDate: null,
+            bullets: ['Built scalable applications', 'Led development team'],
+          },
+        ],
+      },
       coverLetter: {
         greeting: 'Dear Hiring Manager,',
         paragraphs: [

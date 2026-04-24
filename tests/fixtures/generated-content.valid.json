@@ -1,5 +1,52 @@
 {
-  "resume": "# Tailored Resume for Software Engineer Position\n\n## Professional Summary\nExperienced software engineer with expertise in full-stack development and a passion for building scalable applications.",
+  "resume": {
+    "summary": "Experienced software engineer with expertise in full-stack development and a passion for building scalable applications.",
+    "skills": [
+      "TypeScript",
+      "JavaScript",
+      "Node.js",
+      "React",
+      "Python",
+      "Docker",
+      "Kubernetes",
+      "Git",
+      "CI/CD"
+    ],
+    "experience": [
+      {
+        "company": "Tech Innovators Inc",
+        "title": "Senior Software Engineer",
+        "startDate": "2020-01-15T00:00:00Z",
+        "endDate": null,
+        "location": "San Francisco, CA",
+        "bullets": [
+          "Led development of microservices architecture serving 1M+ users",
+          "Improved application performance by 40% through optimization",
+          "Mentored junior developers and conducted code reviews"
+        ]
+      },
+      {
+        "company": "Startup Co",
+        "title": "Software Engineer",
+        "startDate": "2018-06-01T00:00:00Z",
+        "endDate": "2020-01-10T00:00:00Z",
+        "bullets": [
+          "Built RESTful APIs using Node.js and Express",
+          "Implemented automated testing pipeline",
+          "Collaborated with product team to define requirements"
+        ]
+      }
+    ],
+    "education": [
+      {
+        "institution": "University",
+        "degree": "Bachelor of Science in Computer Science",
+        "field": "Computer Science",
+        "startDate": "2014-09-01T00:00:00Z",
+        "endDate": "2018-05-15T00:00:00Z"
+      }
+    ]
+  },
   "coverLetter": {
     "greeting": "Dear Hiring Manager,",
     "paragraphs": [

@@ -131,6 +131,7 @@ vi.mock('../../src/config/resolve-prompt-preferences.js', () => ({
 
 vi.mock('node:fs/promises', () => ({
   writeFile: vi.fn(() => Promise.resolve()),
+  mkdir: vi.fn(() => Promise.resolve()),
 }));
 
 describe('prompt-generate command', () => {

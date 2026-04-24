@@ -12,7 +12,7 @@ const engine = new Liquid({
 export interface RenderContext {
   profile: any;
   selectedProfileName: string;
-  resume: string;
+  resume: any; // Resume structured data from generated-content schema
   coverLetter: any;
   metadata?: any;
   theme: ThemeConfig;

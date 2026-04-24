@@ -8,11 +8,15 @@ import { parseJobPost } from '../job-posts/parse-job-post.js';
 import { fallbackExtractJobPost, isWeakExtraction } from '../job-posts/fallback-extract-job-post.js';
 import { buildResumeCoverLetterPrompt } from '../prompts/build-resume-cover-letter-prompt.js';
 import { resolvePromptPreferences } from '../config/resolve-prompt-preferences.js';
-import { writeFile } from 'node:fs/promises';
+import { writeFile, mkdir } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
 
 export interface PromptGenerateOptions {
   profile?: string;
   out?: string;
+  description?: string;
+  title?: string;
+  company?: string;
 }
 
 export async function runPromptGenerateCommand(
@@ -24,24 +28,40 @@ export async function runPromptGenerateCommand(
 
   const resume = await loadUserResumeMarkdown(profile);
 
-  const jobSitesConfig = await loadJobSitesConfig();
-  const matchedSite = findJobSiteConfigForUrl(jobPostUrl, jobSitesConfig);
+  let extractedJob;
 
-  const pageHtml = await fetchPage(jobPostUrl);
+  // If description is provided manually, use it instead of fetching
+  if (options.description) {
+    extractedJob = {
+      url: jobPostUrl,
+      title: options.title || 'Job Posting',
+      company: options.company,
+      location: undefined,
+      description: options.description,
+      rawText: options.description,
+    };
+  } else {
+    const jobSitesConfig = await loadJobSitesConfig();
+    const matchedSite = findJobSiteConfigForUrl(jobPostUrl, jobSitesConfig);
 
-  let extractedJob = parseJobPost({
-    url: jobPostUrl,
-    html: pageHtml,
-    matchedDomain: matchedSite?.matchedDomain,
-    siteConfig: matchedSite?.siteConfig,
-  });
+    const pageHtml = await fetchPage(jobPostUrl);
 
-  // Check if extraction is weak and use fallback if needed
-  if (!matchedSite || isWeakExtraction(extractedJob)) {
-    extractedJob = fallbackExtractJobPost({
+    let parsedJob = parseJobPost({
       url: jobPostUrl,
       html: pageHtml,
+      matchedDomain: matchedSite?.matchedDomain,
+      siteConfig: matchedSite?.siteConfig,
     });
+
+    // Check if extraction is weak and use fallback if needed
+    if (!matchedSite || isWeakExtraction(parsedJob)) {
+      parsedJob = fallbackExtractJobPost({
+        url: jobPostUrl,
+        html: pageHtml,
+      });
+    }
+
+    extractedJob = parsedJob;
   }
 
   // Resolve prompt preferences for the selected profile
@@ -57,15 +77,23 @@ export async function runPromptGenerateCommand(
   });
 
   // Output
-  if (options.out) {
+  const outputFile = options.out || `./output/prompt.${Date.now()}.txt`;
+
+  if (outputFile) {
+    // Ensure output directory exists
+    await mkdir(dirname(outputFile), { recursive: true });
+
     // Write to file
-    await writeFile(options.out, prompt, 'utf-8');
+    await writeFile(outputFile, prompt, 'utf-8');
     // Status messages go to stderr
     console.error(`Generating prompt for: ${jobPostUrl}`);
     console.error(`Using profile: ${profileName}`);
     console.error(`Loaded resume: ${resume.length} characters`);
-    console.error(`Matched job site config: ${matchedSite?.matchedDomain || 'fallback'}`);
-    console.error(`Fetched page: ${pageHtml.length} characters`);
+    if (options.description) {
+      console.error(`Using manual job description`);
+    } else {
+      console.error(`Fetched page from URL`);
+    }
     console.error(`Title: ${extractedJob.title}`);
     if (extractedJob.company) {
       console.error(`Company: ${extractedJob.company}`);
@@ -74,10 +102,9 @@ export async function runPromptGenerateCommand(
       console.error(`Location: ${extractedJob.location}`);
     }
     console.error(`Description length: ${extractedJob.description.length} characters`);
-    console.error(`Raw text length: ${(extractedJob.rawText || '').length} characters`);
-    console.error(`Prompt written to ${options.out}`);
+    console.error(`Prompt written to ${outputFile}`);
   } else {
-    // Print to stdout
+    // Print to stdout (shouldn't reach here with default)
     console.log(prompt);
   }
 }

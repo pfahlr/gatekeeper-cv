@@ -44,13 +44,38 @@ export function buildResumeCoverLetterPrompt(params: BuildPromptParams): string 
   sections.push('JSON Schema:');
   sections.push(`{
   "resume": {
-    "sections": [
+    "summary": string (optional),
+    "skills": string[],
+    "experience": [
       {
-        "type": "summary" | "experience" | "skills" | "education" | "projects",
+        "company": string,
         "title": string,
-        "content": string[]
+        "startDate": string (ISO 8601 datetime, e.g., "2020-01-15T00:00:00Z"),
+        "endDate": string | null (ISO 8601 datetime, or null for current position),
+        "location": string (optional),
+        "bullets": string[]
       }
-    ]
+    ],
+    "education": [
+      {
+        "institution": string,
+        "degree": string,
+        "field": string (optional),
+        "startDate": string (ISO 8601 datetime, optional),
+        "endDate": string (ISO 8601 datetime, optional),
+        "gpa": string (optional)
+      }
+    ] (optional),
+    "projects": [
+      {
+        "name": string,
+        "description": string (optional),
+        "technologies": string[] (optional),
+        "url": string (optional),
+        "startDate": string (ISO 8601 datetime, optional),
+        "endDate": string (ISO 8601 datetime, optional)
+      }
+    ] (optional)
   },
   "coverLetter": {
     "greeting": string,
@@ -59,7 +84,8 @@ export function buildResumeCoverLetterPrompt(params: BuildPromptParams): string 
   },
   "jobTitle": string,
   "companyName": string,
-  "notes": string
+  "generatedAt": string (ISO 8601 datetime, optional),
+  "notes": string (optional)
 }`);
   sections.push('');
 

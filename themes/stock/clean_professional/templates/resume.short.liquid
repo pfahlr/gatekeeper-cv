@@ -21,30 +21,40 @@
       {% endif %}
     </header>
 
-    {% if profile.summary %}
+    {% if resume.summary %}
     <section class="resume-section">
       <h2>Summary</h2>
-      <p>{{ profile.summary }}</p>
+      <p>{{ resume.summary }}</p>
     </section>
     {% endif %}
 
     <section class="resume-section">
       <h2>Skills</h2>
       <ul class="skills-list">
-        {% for skill in profile.skills %}
+        {% for skill in resume.skills %}
         <li>{{ skill }}</li>
         {% endfor %}
       </ul>
     </section>
 
+    {% if resume.experience and resume.experience.size > 0 %}
     <section class="resume-section">
       <h2>Experience</h2>
-      <p><em>Tailored for:</em></p>
-      <p><strong>{{ metadata.jobTitle }}</strong>{% if metadata.companyName %} at {{ metadata.companyName }}{% endif %}</p>
-      <div class="resume-text">
-        {{ resume }}
+      {% for job in resume.experience %}
+      <div class="experience-item">
+        <h3>{{ job.title }}</h3>
+        <p class="company-name">{{ job.company }}</p>
+        {% if job.bullets and job.bullets.size > 0 %}
+        <ul class="experience-bullets">
+          {% for bullet in job.bullets %}
+          <li>{{ bullet }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
       </div>
+      {% endfor %}
     </section>
+    {% endif %}
 
     <footer class="resume-footer">
       <p>Generated on {% if metadata.generatedAt %}{{ metadata.generatedAt }}{% else %}{{ build.timestamp }}{% endif %}</p>

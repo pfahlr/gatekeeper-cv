@@ -21,7 +21,10 @@ describe('renderTemplate', () => {
       email: 'john@example.com',
     },
     selectedProfileName: 'default',
-    resume: '# Resume',
+    resume: {
+      skills: ['JavaScript'],
+      experience: [],
+    },
     coverLetter: {
       paragraphs: ['First paragraph'],
     },

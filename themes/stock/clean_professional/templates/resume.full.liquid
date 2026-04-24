@@ -27,32 +27,96 @@
       {% endif %}
     </header>
 
-    {% if profile.summary %}
+    {% if resume.summary %}
     <section class="resume-section">
       <h2>Summary</h2>
-      <p>{{ profile.summary }}</p>
+      <p>{{ resume.summary }}</p>
     </section>
     {% endif %}
 
     <section class="resume-section">
       <h2>Skills</h2>
       <ul class="skills-list">
-        {% for skill in profile.skills %}
+        {% for skill in resume.skills %}
         <li>{{ skill }}</li>
         {% endfor %}
       </ul>
     </section>
 
+    {% if resume.experience and resume.experience.size > 0 %}
     <section class="resume-section">
       <h2>Professional Experience</h2>
-      <div class="experience-content">
-        <p><em>Resume content tailored for:</em></p>
-        <p><strong>{{ metadata.jobTitle }}</strong>{% if metadata.companyName %} at {{ metadata.companyName }}{% endif %}</p>
-        <div class="resume-text">
-          {{ resume }}
-        </div>
+      {% for job in resume.experience %}
+      <div class="experience-item">
+        <h3>{{ job.title }}</h3>
+        <p class="company-name">{{ job.company }}{% if job.location %} - {{ job.location }}{% endif %}</p>
+        <p class="employment-period">
+          {% if job.startDate %}{{ job.startDate | date: "%B %Y" }}{% endif %}
+          {% if job.endDate %}
+            — {{ job.endDate | date: "%B %Y" }}
+          {% else %}
+            — Present
+          {% endif %}
+        </p>
+        {% if job.bullets and job.bullets.size > 0 %}
+        <ul class="experience-bullets">
+          {% for bullet in job.bullets %}
+          <li>{{ bullet }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
       </div>
+      {% endfor %}
     </section>
+    {% endif %}
+
+    {% if resume.education and resume.education.size > 0 %}
+    <section class="resume-section">
+      <h2>Education</h2>
+      {% for edu in resume.education %}
+      <div class="education-item">
+        <h3>{{ edu.degree }}</h3>
+        <p class="institution-name">{{ edu.institution }}{% if edu.field %} - {{ edu.field }}{% endif %}</p>
+        {% if edu.startDate or edu.endDate %}
+        <p class="education-period">
+          {% if edu.startDate %}{{ edu.startDate | date: "%B %Y" }}{% endif %}
+          {% if edu.endDate %}
+            — {{ edu.endDate | date: "%B %Y" }}
+          {% endif %}
+        </p>
+        {% endif %}
+        {% if edu.gpa %}
+        <p class="education-gpa">GPA: {{ edu.gpa }}</p>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </section>
+    {% endif %}
+
+    {% if resume.projects and resume.projects.size > 0 %}
+    <section class="resume-section">
+      <h2>Projects</h2>
+      {% for project in resume.projects %}
+      <div class="project-item">
+        <h3>{{ project.name }}{% if project.url %} <a href="{{ project.url }}" target="_blank" rel="noopener">🔗</a>{% endif %}</h3>
+        {% if project.description %}
+        <p class="project-description">{{ project.description }}</p>
+        {% endif %}
+        {% if project.technologies and project.technologies.size > 0 %}
+        <p class="project-tech"><strong>Technologies:</strong> {{ project.technologies | join: ", " }}</p>
+        {% endif %}
+        {% if project.startDate or project.endDate %}
+        <p class="project-period">
+          {% if project.startDate %}{{ project.startDate | date: "%B %Y" }}{% endif %}
+          {% if project.endDate %}
+            — {{ project.endDate | date: "%B %Y" }}
+          {% endif %}
+        </p>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </section>
+    {% endif %}
 
     <footer class="resume-footer">
       <p>Generated on {% if metadata.generatedAt %}{{ metadata.generatedAt }}{% else %}{{ build.timestamp }}{% endif %}</p>
