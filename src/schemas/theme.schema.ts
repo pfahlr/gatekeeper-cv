@@ -4,17 +4,20 @@ import { nameSchema } from '../utils/name-validation.js';
 export const resumeOutputSchema = z.object({
   template: z.string(),
   outputPath: z.string(),
+  styles: z.array(z.string()).default([]),
 });
 
 export const coverLetterOutputSchema = z.object({
   template: z.string(),
   outputPath: z.string(),
+  styles: z.array(z.string()).default([]),
 });
 
 export const themeConfigSchema = z
   .object({
     name: nameSchema,
     description: z.string().optional(),
+    assetsDir: z.string().optional(),
     resumes: z.array(resumeOutputSchema).default([]),
     coverLetters: z.array(coverLetterOutputSchema).default([]),
   })

@@ -4,13 +4,20 @@
   "resumes": [
     {
       "template": "resume.full.liquid",
-      "outputPath": "resume.full.html"
+      "outputPath": "resume.full.html",
+      "styles": ["styles/resume.css"]
+    },
+    {
+      "template": "resume.short.liquid",
+      "outputPath": "resume.short.html",
+      "styles": ["styles/resume.css"]
     }
   ],
   "coverLetters": [
     {
       "template": "cover_letter.standard.liquid",
-      "outputPath": "cover_letter.standard.html"
+      "outputPath": "cover_letter.standard.html",
+      "styles": ["styles/cover_letter.css"]
     }
   ]
 }

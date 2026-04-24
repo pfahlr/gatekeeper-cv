@@ -3,6 +3,9 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { resolve, join, dirname } from 'node:path';
 import { resolveTheme } from './resolve-theme.js';
 import { renderTemplate, getTemplatePath, type RenderContext } from './render-theme.js';
+import { copyThemeAssets } from './copy-theme-assets.js';
+import { copyThemeStyles } from './copy-theme-styles.js';
+import { validateOutputPathSafe } from './copy-theme-assets.js';
 import type { ThemeConfig } from '../schemas/theme.schema.js';
 import { generatedContentSchema } from '../schemas/generated-content.schema.js';
 
@@ -36,61 +39,68 @@ export async function buildDocs(params: BuildDocsParams): Promise<BuildDocsResul
 
   const generatedFiles: string[] = [];
 
-  // 4. Render first resume output
-  if (resolvedTheme.config.resumes.length > 0) {
-    const resumeOutput = resolvedTheme.config.resumes[0];
+  // 4. Prepare render context (shared by all outputs)
+  const context: RenderContext = {
+    profile: content,
+    selectedProfileName: profileName || 'default',
+    resume: content.resume,
+    coverLetter: content.coverLetter,
+    metadata: {
+      jobTitle: content.jobTitle,
+      companyName: content.companyName,
+      generatedAt: content.generatedAt,
+    },
+    theme: resolvedTheme.config,
+    build: {
+      timestamp,
+      outputDirectory: buildDir,
+    },
+  };
+
+  // 5. Render all resume outputs
+  for (const resumeOutput of resolvedTheme.config.resumes) {
     const templatePath = getTemplatePath(resolvedTheme, resumeOutput.template);
 
-    const context: RenderContext = {
-      profile: content, // Using generated content as profile for now
-      selectedProfileName: profileName || 'default',
-      resume: content.resume,
-      coverLetter: content.coverLetter,
-      metadata: {
-        jobTitle: content.jobTitle,
-        companyName: content.companyName,
-        generatedAt: content.generatedAt,
-      },
-      theme: resolvedTheme.config,
-      build: {
-        timestamp,
-        outputDirectory: buildDir,
-      },
-    };
+    // Validate output path is safe
+    const outputPath = join(buildDir, resumeOutput.outputPath);
+    validateOutputPathSafe(buildDir, outputPath);
 
     const rendered = await renderTemplate(templatePath, context, resolvedTheme.themePath);
-    const outputPath = join(buildDir, resumeOutput.outputPath);
+
+    // Ensure output directory exists
+    await mkdir(dirname(outputPath), { recursive: true });
+
     await writeFile(outputPath, rendered, 'utf-8');
     generatedFiles.push(resumeOutput.outputPath);
   }
 
-  // 5. Render first cover letter output
-  if (resolvedTheme.config.coverLetters.length > 0) {
-    const coverLetterOutput = resolvedTheme.config.coverLetters[0];
+  // 6. Render all cover letter outputs
+  for (const coverLetterOutput of resolvedTheme.config.coverLetters) {
     const templatePath = getTemplatePath(resolvedTheme, coverLetterOutput.template);
 
-    const context: RenderContext = {
-      profile: content,
-      selectedProfileName: profileName || 'default',
-      resume: content.resume,
-      coverLetter: content.coverLetter,
-      metadata: {
-        jobTitle: content.jobTitle,
-        companyName: content.companyName,
-        generatedAt: content.generatedAt,
-      },
-      theme: resolvedTheme.config,
-      build: {
-        timestamp,
-        outputDirectory: buildDir,
-      },
-    };
+    // Validate output path is safe
+    const outputPath = join(buildDir, coverLetterOutput.outputPath);
+    validateOutputPathSafe(buildDir, outputPath);
 
     const rendered = await renderTemplate(templatePath, context, resolvedTheme.themePath);
-    const outputPath = join(buildDir, coverLetterOutput.outputPath);
+
+    // Ensure output directory exists
+    await mkdir(dirname(outputPath), { recursive: true });
+
     await writeFile(outputPath, rendered, 'utf-8');
     generatedFiles.push(coverLetterOutput.outputPath);
   }
+
+  // 7. Copy styles referenced by outputs
+  const { copiedStyles } = await copyThemeStyles(
+    resolvedTheme,
+    resolvedTheme.config.resumes,
+    resolvedTheme.config.coverLetters,
+    buildDir
+  );
+
+  // 8. Copy assets if defined
+  await copyThemeAssets(resolvedTheme, buildDir);
 
   return {
     outputDirectory: buildDir,

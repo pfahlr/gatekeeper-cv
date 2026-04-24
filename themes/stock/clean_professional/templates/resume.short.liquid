@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ profile.name }} - Resume</title>
+  <link rel="stylesheet" href="../styles/resume.css">
+</head>
+<body>
+  <div class="resume-container">
+    <header class="resume-header">
+      <h1>{{ profile.name }}</h1>
+      {% if profile.email %}
+      <p class="contact-info">{{ profile.email }}</p>
+      {% endif %}
+      {% if profile.phone %}
+      <p class="contact-info">{{ profile.phone }}</p>
+      {% endif %}
+      {% if profile.location %}
+      <p class="contact-info">{{ profile.location }}</p>
+      {% endif %}
+    </header>
+
+    {% if profile.summary %}
+    <section class="resume-section">
+      <h2>Summary</h2>
+      <p>{{ profile.summary }}</p>
+    </section>
+    {% endif %}
+
+    <section class="resume-section">
+      <h2>Skills</h2>
+      <ul class="skills-list">
+        {% for skill in profile.skills %}
+        <li>{{ skill }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section class="resume-section">
+      <h2>Experience</h2>
+      <p><em>Tailored for:</em></p>
+      <p><strong>{{ metadata.jobTitle }}</strong>{% if metadata.companyName %} at {{ metadata.companyName }}{% endif %}</p>
+      <div class="resume-text">
+        {{ resume }}
+      </div>
+    </section>
+
+    <footer class="resume-footer">
+      <p>Generated on {% if metadata.generatedAt %}{{ metadata.generatedAt }}{% else %}{{ build.timestamp }}{% endif %}</p>
+    </footer>
+  </div>
+</body>
+</html>
