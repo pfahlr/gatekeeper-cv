@@ -71,6 +71,20 @@ vi.mock('../../src/job-posts/fetch-page.js', () => ({
   fetchPage: vi.fn(() => Promise.resolve('<html><body>Job posting content</body></html>')),
 }));
 
+vi.mock('../../src/job-posts/parse-job-post.js', () => ({
+  parseJobPost: vi.fn(() => ({
+    url: 'https://example.com/job',
+    sourceUrl: 'https://example.com/job',
+    sourceDomain: 'example.com',
+    title: 'Test Job',
+    company: 'Example Corp',
+    location: 'Remote',
+    description: 'A test job description with enough content to be useful.',
+    rawText: 'Full raw text content from the job posting.',
+    extractedAt: new Date().toISOString(),
+  })),
+}));
+
 describe('prompt-generate command', () => {
   it('should handle basic invocation with url', async () => {
     await runPromptGenerateCommand('https://example.com/job');

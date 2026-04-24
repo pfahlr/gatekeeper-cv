@@ -6,13 +6,16 @@ export const domainNameSchema = z.string().regex(/^[a-z0-9.-]+$/, {
   message: 'Domain name must contain only lowercase letters, numbers, dots, and hyphens',
 });
 
+// Selectors can be a single string or an array of strings
+const selectorValue = z.union([z.string(), z.array(z.string())]);
+
 export const selectorsSchema = z.object({
-  title: z.string(),
-  description: z.string(),
-  company: z.string().optional(),
-  location: z.string().optional(),
-  salary: z.string().optional(),
-  requirements: z.string().optional(),
+  title: selectorValue,
+  description: selectorValue,
+  company: selectorValue.optional(),
+  location: selectorValue.optional(),
+  salary: selectorValue.optional(),
+  requirements: selectorValue.optional(),
 });
 
 export const jobSiteSchema = z.object({
@@ -28,3 +31,4 @@ export const jobSiteConfigSchema = z.object({
 export type JobSiteConfig = z.infer<typeof jobSiteConfigSchema>;
 export type JobSite = z.infer<typeof jobSiteSchema>;
 export type Selectors = z.infer<typeof selectorsSchema>;
+export type SelectorValue = z.infer<typeof selectorValue>;

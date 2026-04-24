@@ -4,6 +4,7 @@ import { loadUserResumeMarkdown } from '../config/load-user-resume.js';
 import { fetchPage } from '../job-posts/fetch-page.js';
 import { loadJobSitesConfig } from '../config/load-job-sites-config.js';
 import { findJobSiteConfigForUrl } from '../job-posts/domain-config.js';
+import { parseJobPost } from '../job-posts/parse-job-post.js';
 
 export interface PromptGenerateOptions {
   profile?: string;
@@ -34,6 +35,23 @@ export async function runPromptGenerateCommand(
 
   const pageHtml = await fetchPage(jobPostUrl);
   console.log(`Fetched page: ${pageHtml.length} characters`);
+
+  const extractedJob = parseJobPost({
+    url: jobPostUrl,
+    html: pageHtml,
+    matchedDomain: matchedSite?.matchedDomain,
+    siteConfig: matchedSite?.siteConfig,
+  });
+
+  console.log(`Title: ${extractedJob.title}`);
+  if (extractedJob.company) {
+    console.log(`Company: ${extractedJob.company}`);
+  }
+  if (extractedJob.location) {
+    console.log(`Location: ${extractedJob.location}`);
+  }
+  console.log(`Description length: ${extractedJob.description.length} characters`);
+  console.log(`Raw text length: ${(extractedJob.rawText || '').length} characters`);
 
   if (options.out) {
     console.log(`Prompt output file: ${options.out}`);
