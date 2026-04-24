@@ -5,6 +5,7 @@ import { fetchPage } from '../job-posts/fetch-page.js';
 import { loadJobSitesConfig } from '../config/load-job-sites-config.js';
 import { findJobSiteConfigForUrl } from '../job-posts/domain-config.js';
 import { parseJobPost } from '../job-posts/parse-job-post.js';
+import { fallbackExtractJobPost, isWeakExtraction } from '../job-posts/fallback-extract-job-post.js';
 
 export interface PromptGenerateOptions {
   profile?: string;
@@ -36,12 +37,23 @@ export async function runPromptGenerateCommand(
   const pageHtml = await fetchPage(jobPostUrl);
   console.log(`Fetched page: ${pageHtml.length} characters`);
 
-  const extractedJob = parseJobPost({
+  let extractedJob = parseJobPost({
     url: jobPostUrl,
     html: pageHtml,
     matchedDomain: matchedSite?.matchedDomain,
     siteConfig: matchedSite?.siteConfig,
   });
+
+  // Check if extraction is weak and use fallback if needed
+  if (!matchedSite || isWeakExtraction(extractedJob)) {
+    if (matchedSite) {
+      console.log('Configured extraction was weak. Using fallback extraction.');
+    }
+    extractedJob = fallbackExtractJobPost({
+      url: jobPostUrl,
+      html: pageHtml,
+    });
+  }
 
   console.log(`Title: ${extractedJob.title}`);
   if (extractedJob.company) {

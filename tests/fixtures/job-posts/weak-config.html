@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Developer Job - Weak Config Example</title>
+  <style>
+    body { font-family: Arial, sans-serif; }
+  </style>
+</head>
+<body>
+  <h1>Full Stack Developer</h1>
+
+  <div class="job-details">
+    <p class="short">Apply now.</p>
+  </div>
+
+  <div class="hidden-content" style="display: none;">
+    This is the real job description with all the details that would make for a good extraction. It includes information about the role, requirements, benefits, and more. However, the configured selector only targets the short "Apply now" text, resulting in a weak extraction that should trigger fallback.
+  </div>
+
+  <nav>Navigation</nav>
+  <footer>Footer content</footer>
+
+  <script>
+    analytics.track('page_view');
+  </script>
+</body>
+</html>

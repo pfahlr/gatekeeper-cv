@@ -2,6 +2,7 @@ import * as cheerio from 'cheerio';
 import type { JobSite } from '../config/load-job-sites-config.js';
 import type { ExtractedJob } from '../schemas/extracted-job.schema.js';
 import { extractFirstText, extractListText, normalizeWhitespace } from './extract-text.js';
+export { isWeakExtraction } from './fallback-extract-job-post.js';
 
 interface ParseJobPostParams {
   url: string;
@@ -108,15 +109,3 @@ export function parseJobPost(params: ParseJobPostParams): ExtractedJob {
   return job;
 }
 
-export function isWeakExtraction(job: ExtractedJob): boolean {
-  const descLength = job.description.trim().length;
-  const rawLength = (job.rawText || '').trim().length;
-
-  // Weak if description is short but raw text is longer
-  const weakByLength = descLength < 500 && rawLength > descLength;
-
-  // Weak if raw text is very short
-  const weakByShortRaw = rawLength < 200 && rawLength > 0;
-
-  return weakByLength || weakByShortRaw;
-}

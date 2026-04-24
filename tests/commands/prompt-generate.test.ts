@@ -80,9 +80,22 @@ vi.mock('../../src/job-posts/parse-job-post.js', () => ({
     company: 'Example Corp',
     location: 'Remote',
     description: 'A test job description with enough content to be useful.',
-    rawText: 'Full raw text content from the job posting.',
+    rawText: 'Full raw text content from the job posting that is sufficiently long.',
     extractedAt: new Date().toISOString(),
   })),
+}));
+
+vi.mock('../../src/job-posts/fallback-extract-job-post.js', () => ({
+  fallbackExtractJobPost: vi.fn(() => ({
+    url: 'https://example.com/job',
+    sourceUrl: 'https://example.com/job',
+    sourceDomain: 'example.com',
+    title: 'Test Job',
+    description: 'Fallback extracted description with more content.',
+    rawText: 'Fallback raw text content.',
+    extractedAt: new Date().toISOString(),
+  })),
+  isWeakExtraction: vi.fn(() => false),
 }));
 
 describe('prompt-generate command', () => {
