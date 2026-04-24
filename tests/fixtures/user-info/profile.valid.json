@@ -1,0 +1,26 @@
+{
+  "defaultProfile": "default",
+  "profiles": {
+    "default": {
+      "name": "Test User",
+      "email": "test@example.com",
+      "resumes": {
+        "main": {
+          "path": "resumes/default.md",
+          "description": "Main resume"
+        }
+      },
+      "skills": ["TypeScript", "Node.js"]
+    },
+    "alternate": {
+      "name": "Alternate User",
+      "email": "alternate@example.com",
+      "resumes": {
+        "main": {
+          "path": "resumes/default.md"
+        }
+      },
+      "skills": ["Python"]
+    }
+  }
+}
