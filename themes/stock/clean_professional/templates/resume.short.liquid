@@ -30,11 +30,26 @@
 
     <section class="resume-section">
       <h2>Skills</h2>
+      {% if resume.skills[0].category %}
+      {% comment %} Grouped skills {% endcomment %}
+      {% for group in resume.skills %}
+      <div class="skills-group">
+        <h3 class="skills-category">{{ group.category }}</h3>
+        <ul class="skills-list">
+          {% for skill in group.items %}
+          <li>{{ skill }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
+      {% else %}
+      {% comment %} Flat skills list {% endcomment %}
       <ul class="skills-list">
         {% for skill in resume.skills %}
         <li>{{ skill }}</li>
         {% endfor %}
       </ul>
+      {% endif %}
     </section>
 
     {% if resume.experience and resume.experience.size > 0 %}

@@ -8,11 +8,15 @@ A software engineer with experience building scalable applications and deliverin
 
 ## Skills
 
-- TypeScript, JavaScript, Python
-- Node.js, React, Vue.js
-- Docker, Kubernetes
-- Git, CI/CD
-- SQL, NoSQL databases
+**Languages**: TypeScript, JavaScript, Python, Go
+
+**Frontend**: React, Vue.js, HTML, CSS, Tailwind CSS
+
+**Backend**: Node.js, Express, Flask, Django
+
+**DevOps**: Docker, Kubernetes, Git, CI/CD, AWS
+
+**Databases**: PostgreSQL, MySQL, MongoDB, Redis
 
 ## Experience
 

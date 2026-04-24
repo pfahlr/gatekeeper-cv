@@ -2,15 +2,10 @@
   "resume": {
     "summary": "Experienced software engineer with expertise in full-stack development and a passion for building scalable applications.",
     "skills": [
-      "TypeScript",
-      "JavaScript",
-      "Node.js",
-      "React",
-      "Python",
-      "Docker",
-      "Kubernetes",
-      "Git",
-      "CI/CD"
+      { "category": "Languages", "items": ["TypeScript", "JavaScript", "Python", "Go"] },
+      { "category": "Frontend", "items": ["React", "Vue.js", "Tailwind CSS"] },
+      { "category": "Backend", "items": ["Node.js", "Express", "FastAPI"] },
+      { "category": "DevOps", "items": ["Docker", "Kubernetes", "CI/CD", "Git"] }
     ],
     "experience": [
       {
@@ -37,13 +32,33 @@
         ]
       }
     ],
+    "volunteering": [
+      {
+        "organization": "Code for America",
+        "title": "Volunteer Technical Lead",
+        "startDate": "2021-06-01T00:00:00Z",
+        "endDate": "2022-12-31T00:00:00Z",
+        "location": "Remote",
+        "bullets": [
+          "Led team of 5 volunteers developing web application for local government transparency",
+          "Organized monthly hackathons to promote civic tech engagement",
+          "Mentored new contributors in open source development practices"
+        ]
+      }
+    ],
     "education": [
       {
         "institution": "University",
         "degree": "Bachelor of Science in Computer Science",
         "field": "Computer Science",
         "startDate": "2014-09-01T00:00:00Z",
-        "endDate": "2018-05-15T00:00:00Z"
+        "endDate": "2018-05-15T00:00:00Z",
+        "gpa": "3.8",
+        "bullets": [
+          "Dean's List: Fall 2014 - Spring 2018",
+          "Computer Science Club President (2016-2017)",
+          "Received Outstanding Senior Project Award"
+        ]
       }
     ]
   },

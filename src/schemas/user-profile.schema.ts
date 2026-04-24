@@ -7,6 +7,11 @@ export const resumeMetadataSchema = z.object({
   description: z.string().optional(),
 });
 
+export const skillsGroupingSchema = z.object({
+  enabled: z.boolean().default(false),
+  categories: z.array(z.string()).default([]),
+});
+
 export const profileSchema = z.object({
   name: z.string(),
   email: z.string().email(),
@@ -17,6 +22,7 @@ export const profileSchema = z.object({
   github: z.string().optional(),
   resumes: z.record(nameSchema, resumeMetadataSchema),
   skills: z.array(z.string()).default([]),
+  skillsGrouping: skillsGroupingSchema.optional(),
   summary: z.string().optional(),
   promptPreferences: promptPreferencesSchema.optional(),
 });

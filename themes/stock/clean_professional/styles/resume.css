@@ -62,6 +62,75 @@ body {
   font-size: 14px;
 }
 
+.skills-group {
+  margin-bottom: 15px;
+}
+
+.skills-category {
+  color: #2c5282;
+  font-size: 15px;
+  margin: 0 0 8px 0;
+}
+
+.experience-item,
+.project-item,
+.education-item {
+  margin-bottom: 20px;
+}
+
+.experience-item h3,
+.project-item h3,
+.education-item h3 {
+  color: #2c5282;
+  font-size: 16px;
+  margin: 0 0 5px 0;
+}
+
+.company-name,
+.institution-name {
+  color: #4a5568;
+  font-size: 14px;
+  margin: 0 0 5px 0;
+}
+
+.employment-period,
+.education-period,
+.project-period {
+  color: #718096;
+  font-size: 13px;
+  font-style: italic;
+  margin: 0 0 8px 0;
+}
+
+.experience-bullets,
+.education-bullets {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.experience-bullets li,
+.education-bullets li {
+  margin-bottom: 5px;
+  color: #4a5568;
+}
+
+.education-gpa {
+  color: #718096;
+  font-size: 13px;
+  margin: 5px 0;
+}
+
+.project-description {
+  color: #4a5568;
+  margin: 5px 0;
+}
+
+.project-tech {
+  color: #4a5568;
+  font-size: 13px;
+  margin: 5px 0;
+}
+
 .experience-content {
   color: #4a5568;
 }

@@ -45,7 +45,7 @@ export function buildResumeCoverLetterPrompt(params: BuildPromptParams): string 
   sections.push(`{
   "resume": {
     "summary": string (optional),
-    "skills": string[],
+    "skills": string[] | [{ "category": string, "items": string[] }],
     "experience": [
       {
         "company": string,
@@ -56,6 +56,16 @@ export function buildResumeCoverLetterPrompt(params: BuildPromptParams): string 
         "bullets": string[]
       }
     ],
+    "volunteering": [
+      {
+        "organization": string,
+        "title": string,
+        "startDate": string (ISO 8601 datetime, optional),
+        "endDate": string (ISO 8601 datetime, optional),
+        "location": string (optional),
+        "bullets": string[]
+      }
+    ] (optional),
     "education": [
       {
         "institution": string,
@@ -63,7 +73,8 @@ export function buildResumeCoverLetterPrompt(params: BuildPromptParams): string 
         "field": string (optional),
         "startDate": string (ISO 8601 datetime, optional),
         "endDate": string (ISO 8601 datetime, optional),
-        "gpa": string (optional)
+        "gpa": string (optional),
+        "bullets": string[] (optional)
       }
     ] (optional),
     "projects": [
@@ -78,12 +89,12 @@ export function buildResumeCoverLetterPrompt(params: BuildPromptParams): string 
     ] (optional)
   },
   "coverLetter": {
-    "greeting": string,
+    "greeting": string (optional),
     "paragraphs": string[],
-    "closing": string
+    "closing": string (optional)
   },
-  "jobTitle": string,
-  "companyName": string,
+  "jobTitle": string (optional),
+  "companyName": string (optional),
   "generatedAt": string (ISO 8601 datetime, optional),
   "notes": string (optional)
 }`);
@@ -103,14 +114,28 @@ export function buildResumeCoverLetterPrompt(params: BuildPromptParams): string 
   if (selectedProfile.skills.length > 0) {
     sections.push(`  Skills: ${selectedProfile.skills.join(', ')}`);
   }
+  if (selectedProfile.skillsGrouping?.enabled) {
+    sections.push(`  Skills grouping: enabled (${selectedProfile.skillsGrouping.categories.length} categories)`);
+  }
   sections.push('');
 
-  // 6. Prompt preferences
+  // 6. Skills grouping instructions
+  if (selectedProfile.skillsGrouping?.enabled && selectedProfile.skillsGrouping.categories.length > 0) {
+    sections.push('Skills Grouping:');
+    sections.push('  Format the "skills" field as an array of objects with "category" and "items" properties.');
+    sections.push(`  Use these category names: ${selectedProfile.skillsGrouping.categories.join(', ')}`);
+    sections.push('  Distribute the candidate\'s skills appropriately across these categories.');
+    sections.push('');
+  }
+
+  // 7. Prompt preferences
+
+  // 7. Prompt preferences
   sections.push('Prompt Preferences:');
   sections.push(formatPromptPreferences(promptPreferences));
   sections.push('');
 
-  // 7. Extracted job information
+  // 8. Extracted job information
   sections.push('Job Posting Information:');
   sections.push(`  URL: ${extractedJob.url}`);
   sections.push(`  Title: ${extractedJob.title}`);
@@ -133,14 +158,14 @@ export function buildResumeCoverLetterPrompt(params: BuildPromptParams): string 
   }
   sections.push('');
 
-  // 8. Source resume markdown
+  // 9. Source resume markdown
   sections.push('Source Resume (Markdown):');
   sections.push('```');
   sections.push(resumeMarkdown);
   sections.push('```');
   sections.push('');
 
-  // 9. Grounding rules
+  // 10. Grounding rules
   sections.push('Grounding Rules:');
   sections.push(
     'Do not invent degrees, certifications, employers, dates, titles, or metrics that are not present in the supplied resume.'

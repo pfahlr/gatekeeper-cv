@@ -148,4 +148,76 @@ describe('generated-content schema', () => {
     const result = generatedContentSchema.safeParse(invalidContent);
     expect(result.success).toBe(false);
   });
+
+  it('should accept grouped skills with category and items', () => {
+    const content = {
+      resume: {
+        skills: [
+          { category: 'Languages', items: ['JavaScript', 'TypeScript', 'Python'] },
+          { category: 'Frameworks', items: ['React', 'Vue.js', 'Express'] },
+        ],
+        experience: [],
+      },
+      coverLetter: {
+        paragraphs: [],
+      },
+    };
+    const result = generatedContentSchema.safeParse(content);
+    expect(result.success).toBe(true);
+  });
+
+  it('should accept volunteering section', () => {
+    const content = {
+      resume: {
+        skills: [],
+        experience: [],
+        volunteering: [
+          {
+            organization: 'Tech Nonprofit',
+            title: 'Volunteer Developer',
+            startDate: '2022-01-01T00:00:00Z',
+            endDate: '2023-01-01T00:00:00Z',
+            location: 'Remote',
+            bullets: [
+              'Built web application for community outreach',
+              'Mentored underserved youth in coding',
+            ],
+          },
+        ],
+      },
+      coverLetter: {
+        paragraphs: [],
+      },
+    };
+    const result = generatedContentSchema.safeParse(content);
+    expect(result.success).toBe(true);
+  });
+
+  it('should accept education with bullets', () => {
+    const content = {
+      resume: {
+        skills: [],
+        experience: [],
+        education: [
+          {
+            institution: 'University',
+            degree: 'BS Computer Science',
+            field: 'Computer Science',
+            startDate: '2014-09-01T00:00:00Z',
+            endDate: '2018-05-15T00:00:00Z',
+            gpa: '3.8',
+            bullets: [
+              'Dean\'s List: Fall 2014 - Spring 2018',
+              'CS Club President',
+            ],
+          },
+        ],
+      },
+      coverLetter: {
+        paragraphs: [],
+      },
+    };
+    const result = generatedContentSchema.safeParse(content);
+    expect(result.success).toBe(true);
+  });
 });
