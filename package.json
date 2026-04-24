@@ -1,0 +1,48 @@
+{
+  "name": "gatekeeper-cv",
+  "version": "0.1.0",
+  "description": "A CLI tool for generating tailored resume and cover letter prompts and rendering generated content into themed documents.",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "author": "",
+  "bin": {
+    "gatekeeper-cv": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "themes/stock",
+    "job-sites.config.json",
+    "user-info/profile.example.json",
+    "user-info/resumes/default.example.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "dev": "tsx src/cli.ts",
+    "build": "tsc",
+    "start": "node dist/cli.js",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "npm run typecheck && npm run test",
+    "clean": "rm -rf dist"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "dependencies": {
+    "cheerio": "^1.1.2",
+    "commander": "^14.0.3",
+    "fs-extra": "^11.3.4",
+    "liquidjs": "^10.25.6",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22.15.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.0",
+    "vitest": "^4.1.5"
+  }
+}
