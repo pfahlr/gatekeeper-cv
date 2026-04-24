@@ -3,6 +3,12 @@
 
 Use domain config selectors to extract structured job posting information from HTML.
 
+## Example job URLs
+
+- Monster: https://www.monster.com/job-openings/lead-sap-full-stack-developer-holland-mi--de5e5a9f-ba6c-455b-b5b3-133f060a8f85
+- NextStep Systems: https://www.nextstepsystems.com/job/mid-senior-php-full-stack-developer-100-onsite/?utm_source=ziprecruiter
+- Web Archive (for testing): https://web.archive.org/web/20260424184451/https://www.nextstepsystems.com/job/mid-senior-php-full-stack-developer-100-onsite/?utm_source=ziprecruiter
+
 ## Files to create
 
 ```text
@@ -80,9 +86,9 @@ extractedAt
 Print an extraction summary:
 
 ```text
-Title: Frontend Developer
-Company: Example Co
-Location: Remote
+Title: Mid-Senior PHP Full Stack Developer
+Company: NextStep Systems
+Location: On-site
 Description length: 3284 characters
 Raw text length: 5972 characters
 ```

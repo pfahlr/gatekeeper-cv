@@ -29,6 +29,16 @@
         "location": ".location",
         "salary": ".salary"
       }
+    },
+    "nextstepsystems.com": {
+      "name": "NextStep Systems",
+      "urlPattern": "https://www.nextstepsystems.com/*",
+      "selectors": {
+        "title": "h1",
+        "description": ".job-description, .entry-content",
+        "company": ".company-name",
+        "location": ".location"
+      }
     }
   }
 }

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { findJobSiteConfigForUrl } from '../../src/job-posts/domain-config.js';
+import { findJobSiteConfigForUrl, getUrlForFetching } from '../../src/job-posts/domain-config.js';
 import type { JobSiteConfig } from '../../src/config/load-job-sites-config.js';
 
 describe('findJobSiteConfigForUrl', () => {
@@ -24,6 +24,14 @@ describe('findJobSiteConfigForUrl', () => {
       'company.careers': {
         name: 'Company Careers',
         urlPattern: 'https://company.careers/*',
+        selectors: {
+          title: 'h1',
+          description: '.description',
+        },
+      },
+      'nextstepsystems.com': {
+        name: 'NextStep Systems',
+        urlPattern: 'https://www.nextstepsystems.com/*',
         selectors: {
           title: 'h1',
           description: '.description',
@@ -141,5 +149,64 @@ describe('findJobSiteConfigForUrl', () => {
     );
 
     expect(result).toBeUndefined();
+  });
+
+  describe('web archive URLs', () => {
+    it('should extract domain from web archive URL', () => {
+      const webArchiveUrl = 'https://web.archive.org/web/20260424184451/https://www.nextstepsystems.com/job/mid-senior-php-full-stack-developer-100-onsite/';
+      const result = findJobSiteConfigForUrl(webArchiveUrl, mockConfig);
+
+      expect(result).toBeDefined();
+      expect(result?.matchedDomain).toBe('nextstepsystems.com');
+      expect(result?.siteConfig.name).toBe('NextStep Systems');
+    });
+
+    it('should extract domain with subdomain from web archive URL', () => {
+      const webArchiveUrl = 'https://web.archive.org/web/20260424184451/https://jobs.example.com/job/123';
+      const result = findJobSiteConfigForUrl(webArchiveUrl, mockConfig);
+
+      expect(result).toBeDefined();
+      expect(result?.matchedDomain).toBe('jobs.example.com');
+      expect(result?.siteConfig.name).toBe('Example Jobs');
+    });
+
+    it('should fall back to parent domain from web archive URL', () => {
+      const webArchiveUrl = 'https://web.archive.org/web/20260424184451/https://subdomain.example.com/job/123';
+      const result = findJobSiteConfigForUrl(webArchiveUrl, mockConfig);
+
+      expect(result).toBeDefined();
+      expect(result?.matchedDomain).toBe('example.com');
+    });
+
+    it('should handle web archive URL with query parameters', () => {
+      const webArchiveUrl = 'https://web.archive.org/web/20260424184451/https://www.nextstepsystems.com/job/php-dev?utm_source=ziprecruiter';
+      const result = findJobSiteConfigForUrl(webArchiveUrl, mockConfig);
+
+      expect(result).toBeDefined();
+      expect(result?.matchedDomain).toBe('nextstepsystems.com');
+    });
+
+    it('should return undefined for unknown domain in web archive URL', () => {
+      const webArchiveUrl = 'https://web.archive.org/web/20260424184451/https://unknown-domain.com/job/123';
+      const result = findJobSiteConfigForUrl(webArchiveUrl, mockConfig);
+
+      expect(result).toBeUndefined();
+    });
+  });
+});
+
+describe('getUrlForFetching', () => {
+  it('should return web archive URL as-is for fetching', () => {
+    const webArchiveUrl = 'https://web.archive.org/web/20260424184451/https://www.nextstepsystems.com/job/php-dev';
+    const result = getUrlForFetching(webArchiveUrl);
+
+    expect(result).toBe(webArchiveUrl);
+  });
+
+  it('should return regular URL as-is for fetching', () => {
+    const regularUrl = 'https://www.nextstepsystems.com/job/php-dev';
+    const result = getUrlForFetching(regularUrl);
+
+    expect(result).toBe(regularUrl);
   });
 });

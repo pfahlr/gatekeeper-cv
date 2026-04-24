@@ -25,11 +25,21 @@
       "name": "Monster",
       "urlPattern": "https://www.monster.com/job-openings/*",
       "selectors": {
+        "title": "h1, .job-title, [data-testid='job-title'], .mux-job-summary-header h2",
+        "description": ".job-description, .description, [data-testid='job-description'], .mux-job-description",
+        "company": ".company-name, [data-testid='company-name'], .mux-company-name",
+        "location": ".location, [data-testid='location'], .mux-job-location",
+        "salary": ".salary, [data-testid='salary'], .mux-salary"
+      }
+    },
+    "nextstepsystems.com": {
+      "name": "NextStep Systems",
+      "urlPattern": "https://www.nextstepsystems.com/*",
+      "selectors": {
         "title": "h1, .job-title, [data-testid='job-title']",
-        "description": ".job-description, .description, [data-testid='job-description']",
+        "description": ".job-description, .description, [data-testid='job-description'], .entry-content",
         "company": ".company-name, [data-testid='company-name']",
-        "location": ".location, [data-testid='location']",
-        "salary": ".salary, [data-testid='salary']"
+        "location": ".location, [data-testid='location']"
       }
     }
   }

@@ -3,6 +3,12 @@
 
 Generate the final pasteable LLM prompt from extracted job data, selected profile summary, resolved prompt preferences, and Markdown resume.
 
+## Example job URLs
+
+- Monster: https://www.monster.com/job-openings/lead-sap-full-stack-developer-holland-mi--de5e5a9f-ba6c-455b-b5b3-133f060a8f85
+- NextStep Systems: https://www.nextstepsystems.com/job/mid-senior-php-full-stack-developer-100-onsite/?utm_source=ziprecruiter
+- Web Archive (for testing): https://web.archive.org/web/20260424184451/https://www.nextstepsystems.com/job/mid-senior-php-full-stack-developer-100-onsite/?utm_source=ziprecruiter
+
 ## Files to create
 
 ```text
@@ -81,7 +87,7 @@ If `--out` is omitted, print only the prompt to stdout. Any status messages shou
 ```bash
 npm run typecheck
 npm test
-npm run dev -- prompt-generate https://example.com/job --profile default --out ./prompt.txt
+npm run dev -- prompt-generate https://www.monster.com/job-openings/lead-sap-full-stack-developer-holland-mi--de5e5a9f-ba6c-455b-b5b3-133f060a8f85 --profile default --out ./prompt.txt
 ```
 
 ## Acceptance criteria

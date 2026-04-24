@@ -14,7 +14,7 @@ describe('loadJobSitesConfig', () => {
     const config = await loadJobSitesConfig(configPath);
 
     expect(config.jobSites).toBeDefined();
-    expect(Object.keys(config.jobSites)).toHaveLength(3);
+    expect(Object.keys(config.jobSites)).toHaveLength(4);
     expect(config.jobSites['example.com']).toBeDefined();
     expect(config.jobSites['example.com'].name).toBe('Example Job Board');
   });

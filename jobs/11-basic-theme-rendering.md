@@ -3,6 +3,12 @@
 
 Implement enough of `build-docs` to render one resume HTML file and one cover letter HTML file from generated JSON and a stock theme.
 
+## Example job URLs
+
+- Monster: https://www.monster.com/job-openings/lead-sap-full-stack-developer-holland-mi--de5e5a9f-ba6c-455b-b5b3-133f060a8f85
+- NextStep Systems: https://www.nextstepsystems.com/job/mid-senior-php-full-stack-developer-100-onsite/?utm_source=ziprecruiter
+- Web Archive (for testing): https://web.archive.org/web/20260424184451/https://www.nextstepsystems.com/job/mid-senior-php-full-stack-developer-100-onsite/?utm_source=ziprecruiter
+
 ## Files to create
 
 ```text
