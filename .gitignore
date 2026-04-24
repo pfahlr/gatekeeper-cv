@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Private user profile and resumes
+user-info/profile.json
+user-info/resumes/*.md
+!user-info/resumes/*.example.md
+
+# Custom user themes (stock themes are tracked)
+themes/user/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Temporary files
+*.tmp
+.temp/

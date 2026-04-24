@@ -1,0 +1,14 @@
+{
+  "jobSites": {
+    "example": {
+      "name": "Example Job Board",
+      "urlPattern": "https://example.com/jobs/*",
+      "selectors": {
+        "title": "h1.job-title",
+        "description": ".job-description",
+        "company": ".company-name",
+        "location": ".job-location"
+      }
+    }
+  }
+}
