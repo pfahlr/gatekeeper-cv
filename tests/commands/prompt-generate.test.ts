@@ -36,6 +36,37 @@ vi.mock('../../src/config/load-user-resume.js', () => ({
   loadUserResumeMarkdown: vi.fn(() => Promise.resolve('# Test User\n\nSample resume content')),
 }));
 
+vi.mock('../../src/config/load-job-sites-config.js', () => ({
+  loadJobSitesConfig: vi.fn(() =>
+    Promise.resolve({
+      jobSites: {
+        'example.com': {
+          name: 'Example',
+          urlPattern: 'https://example.com/*',
+          selectors: {
+            title: 'h1',
+            description: '.description',
+          },
+        },
+      },
+    })
+  ),
+}));
+
+vi.mock('../../src/job-posts/domain-config.js', () => ({
+  findJobSiteConfigForUrl: vi.fn(() => ({
+    matchedDomain: 'example.com',
+    siteConfig: {
+      name: 'Example',
+      urlPattern: 'https://example.com/*',
+      selectors: {
+        title: 'h1',
+        description: '.description',
+      },
+    },
+  })),
+}));
+
 vi.mock('../../src/job-posts/fetch-page.js', () => ({
   fetchPage: vi.fn(() => Promise.resolve('<html><body>Job posting content</body></html>')),
 }));

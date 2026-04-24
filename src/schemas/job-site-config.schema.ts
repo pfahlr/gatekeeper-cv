@@ -1,6 +1,11 @@
 import { z } from 'zod';
 import { nameSchema } from '../utils/name-validation.js';
 
+// Domain names can contain letters, numbers, dots, and hyphens
+export const domainNameSchema = z.string().regex(/^[a-z0-9.-]+$/, {
+  message: 'Domain name must contain only lowercase letters, numbers, dots, and hyphens',
+});
+
 export const selectorsSchema = z.object({
   title: z.string(),
   description: z.string(),
@@ -17,7 +22,7 @@ export const jobSiteSchema = z.object({
 });
 
 export const jobSiteConfigSchema = z.object({
-  jobSites: z.record(nameSchema, jobSiteSchema),
+  jobSites: z.record(domainNameSchema, jobSiteSchema),
 });
 
 export type JobSiteConfig = z.infer<typeof jobSiteConfigSchema>;

@@ -44,7 +44,7 @@ describe('job-site-config schema', () => {
   it('should fail on invalid job site name', () => {
     const invalidConfig = {
       jobSites: {
-        'invalid-name': {
+        'Invalid_Name': {
           name: 'Example',
           urlPattern: 'https://example.com/jobs/*',
           selectors: {

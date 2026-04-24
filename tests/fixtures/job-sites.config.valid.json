@@ -1,0 +1,34 @@
+{
+  "jobSites": {
+    "example.com": {
+      "name": "Example Job Board",
+      "urlPattern": "https://example.com/jobs/*",
+      "selectors": {
+        "title": "h1.job-title",
+        "description": ".job-description",
+        "company": ".company-name",
+        "location": ".job-location"
+      }
+    },
+    "jobs.example.com": {
+      "name": "Example Jobs Subdomain",
+      "urlPattern": "https://jobs.example.com/*",
+      "selectors": {
+        "title": "h1",
+        "description": ".description",
+        "company": ".company"
+      }
+    },
+    "monster.com": {
+      "name": "Monster",
+      "urlPattern": "https://www.monster.com/job-openings/*",
+      "selectors": {
+        "title": "h1",
+        "description": ".job-description",
+        "company": ".company-name",
+        "location": ".location",
+        "salary": ".salary"
+      }
+    }
+  }
+}

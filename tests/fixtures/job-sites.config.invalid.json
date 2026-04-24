@@ -1,0 +1,11 @@
+{
+  "jobSites": {
+    "invalid-site-name": {
+      "name": "Invalid Site",
+      "urlPattern": "https://example.com/*",
+      "selectors": {
+        "company": ".company"
+      }
+    }
+  }
+}
