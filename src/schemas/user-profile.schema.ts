@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { nameSchema } from '../utils/name-validation.js';
+import { promptPreferencesSchema } from '../config/resolve-prompt-preferences.js';
 
 export const resumeMetadataSchema = z.object({
   path: z.string(),
@@ -17,6 +18,7 @@ export const profileSchema = z.object({
   resumes: z.record(nameSchema, resumeMetadataSchema),
   skills: z.array(z.string()).default([]),
   summary: z.string().optional(),
+  promptPreferences: promptPreferencesSchema.optional(),
 });
 
 export const userProfileSchema = z

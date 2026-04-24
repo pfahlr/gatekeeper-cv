@@ -31,8 +31,15 @@ Allowed content types:
 text/html
 application/xhtml+xml
 ```
-
 If content type is missing, allow the response and rely on text content.
+
+## Example Job Posts
+
+https://app.outlier.ai/en/expert/opportunities/4681415005
+https://www.monster.com/job-openings/lead-sap-full-stack-developer-holland-mi--de5e5a9f-ba6c-455b-b5b3-133f060a8f85
+
+update job-sites.config.json - and parsing logic if necessary - to handle these two source
+
 
 ## CLI integration
 
