@@ -9,6 +9,28 @@
         "company": ".company-name",
         "location": ".job-location"
       }
+    },
+    "outlier": {
+      "name": "Outlier AI",
+      "urlPattern": "https://app.outlier.ai/en/expert/opportunities/*",
+      "selectors": {
+        "title": "h1, .job-title, [data-testid='job-title']",
+        "description": ".job-description, .description, [data-testid='job-description']",
+        "company": ".company-name, [data-testid='company-name']",
+        "location": ".location, [data-testid='location']",
+        "requirements": ".requirements, .qualifications, [data-testid='requirements']"
+      }
+    },
+    "monster": {
+      "name": "Monster",
+      "urlPattern": "https://www.monster.com/job-openings/*",
+      "selectors": {
+        "title": "h1, .job-title, [data-testid='job-title']",
+        "description": ".job-description, .description, [data-testid='job-description']",
+        "company": ".company-name, [data-testid='company-name']",
+        "location": ".location, [data-testid='location']",
+        "salary": ".salary, [data-testid='salary']"
+      }
     }
   }
 }

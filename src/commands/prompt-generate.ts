@@ -1,6 +1,7 @@
 import { loadUserProfileConfig } from '../config/load-user-profile.js';
 import { resolveProfile } from '../config/resolve-profile.js';
 import { loadUserResumeMarkdown } from '../config/load-user-resume.js';
+import { fetchPage } from '../job-posts/fetch-page.js';
 
 export interface PromptGenerateOptions {
   profile?: string;
@@ -19,6 +20,9 @@ export async function runPromptGenerateCommand(
 
   const resume = await loadUserResumeMarkdown(profile);
   console.log(`Loaded resume: ${resume.length} characters`);
+
+  const pageHtml = await fetchPage(jobPostUrl);
+  console.log(`Fetched page: ${pageHtml.length} characters`);
 
   if (options.out) {
     console.log(`Prompt output file: ${options.out}`);

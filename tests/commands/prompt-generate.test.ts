@@ -36,6 +36,10 @@ vi.mock('../../src/config/load-user-resume.js', () => ({
   loadUserResumeMarkdown: vi.fn(() => Promise.resolve('# Test User\n\nSample resume content')),
 }));
 
+vi.mock('../../src/job-posts/fetch-page.js', () => ({
+  fetchPage: vi.fn(() => Promise.resolve('<html><body>Job posting content</body></html>')),
+}));
+
 describe('prompt-generate command', () => {
   it('should handle basic invocation with url', async () => {
     await runPromptGenerateCommand('https://example.com/job');
