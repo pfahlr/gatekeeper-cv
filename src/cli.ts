@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
+import { runPromptGenerateCommand } from './commands/prompt-generate.js';
+import { runBuildDocsCommand } from './commands/build-docs.js';
 
 const program = new Command();
 
@@ -11,9 +13,10 @@ program
 program.command('prompt-generate')
   .description('Generate a tailored prompt for a specific job posting')
   .argument('<job-post-url>', 'URL of the job posting to analyze')
-  .action((jobPostUrl: string) => {
-    console.log('Generating prompt for:', jobPostUrl);
-    // Placeholder implementation
+  .option('--profile <profile-name>', 'Profile name to use')
+  .option('--out <output-file>', 'Output file for the generated prompt')
+  .action(async (jobPostUrl: string, options) => {
+    await runPromptGenerateCommand(jobPostUrl, options);
   });
 
 program.command('build-docs')
@@ -21,11 +24,9 @@ program.command('build-docs')
   .argument('<json-file>', 'JSON file containing generated content')
   .argument('<theme-name>', 'Name of the theme to use')
   .argument('<output-directory>', 'Directory where output files will be written')
-  .action((jsonFile: string, themeName: string, outputDirectory: string) => {
-    console.log('Building docs with theme:', themeName);
-    console.log('  Content file:', jsonFile);
-    console.log('  Output directory:', outputDirectory);
-    // Placeholder implementation
+  .option('--profile <profile-name>', 'Profile name to use')
+  .action(async (jsonFile: string, themeName: string, outputDirectory: string, options) => {
+    await runBuildDocsCommand(jsonFile, themeName, outputDirectory, options);
   });
 
 program.parse();
