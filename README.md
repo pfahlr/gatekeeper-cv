@@ -252,21 +252,40 @@ Defines your profiles, each with personal info, resume file, and optional prompt
 
 Defines how to extract job posting details from different job boards.
 
+**Supported Job Sites:**
+
+The tool includes pre-configured selectors for major job boards:
+- **LinkedIn** (`linkedin.com`) - Jobs at `linkedin.com/jobs/view/*`
+- **Indeed** (`indeed.com`) - All job listing pages
+- **Dice** (`dice.com`) - Technology and IT jobs
+- **ZipRecruiter** (`ziprecruiter.com`) - All job listing pages
+- **CareerBuilder** (`careerbuilder.com`) - All job listing pages
+- **Monster** (`monster.com`) - Job openings
+- **And more** - Any custom sites you configure
+
 ```json
 {
-  "sites": {
-    "monster.com": {
+  "jobSites": {
+    "linkedin.com": {
+      "name": "LinkedIn",
+      "urlPattern": "https://www.linkedin.com/jobs/view/*",
       "selectors": {
-        "title": "h1.job-title",
-        "company": ".company-name",
-        "description": ".job-description"
+        "title": "h1, .job-title, [data-testid='job-title'], .top-card-layout__title",
+        "description": ".job-description, .description, [data-testid='job-description'], .show-more-less-html__markup",
+        "company": ".company-name, [data-testid='company-name'], .topcard__org-name-link",
+        "location": ".location, [data-testid='location'], .topcard__flavor-row",
+        "salary": ".salary, [data-testid='salary'], .compensation__salary"
       }
     },
     "indeed.com": {
+      "name": "Indeed",
+      "urlPattern": "https://www.indeed.com/*",
       "selectors": {
-        "title": "#jobTitle",
-        "company": "[data-testid='inlineHeader-companyName']",
-        "description": "#jobDescriptionText"
+        "title": "h1, .job-title, [data-testid='job-title'], #jobTitle",
+        "description": ".job-description, .description, [data-testid='job-description'], #jobDescriptionText",
+        "company": ".company-name, [data-testid='company-name'], [data-testid='inlineHeader-companyName']",
+        "location": ".location, [data-testid='location'], [data-testid='inlineHeader-companyLocation']",
+        "salary": ".salary, [data-testid='salary'], .salary-snippet-container"
       }
     }
   }
@@ -274,6 +293,90 @@ Defines how to extract job posting details from different job boards.
 ```
 
 If no configuration matches a URL, the tool uses a fallback extraction method that works with most job posting pages.
+
+**Adding Custom Job Sites:**
+
+You can add support for additional job boards by adding entries to `job-sites.config.json`:
+
+```json
+{
+  "jobSites": {
+    "your-site.com": {
+      "name": "Your Job Board",
+      "urlPattern": "https://your-site.com/jobs/*",
+      "selectors": {
+        "title": "h1.job-title",
+        "description": ".job-description",
+        "company": ".company-name",
+        "location": ".job-location",
+        "salary": ".salary-info",
+        "requirements": ".requirements-section"
+      }
+    }
+  }
+}
+```
+
+**Note:** Some job sites block automated scraping requests. If you encounter a 403 error, use the `--description` option to paste the job posting content directly.
+
+### Spoof Headers Configuration (`spoof-headers.config.json`)
+
+Helps bypass anti-scraping measures by mimicking a real web browser's HTTP headers.
+
+Many job boards (LinkedIn, Indeed, Dice, etc.) block requests that don't appear to come from a legitimate browser. This tool uses spoof headers to appear as a standard Firefox browser.
+
+```json
+{
+  "enabled": true,
+  "headers": {
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:134.0) Gecko/20100101 Firefox/134.0",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.5",
+    "Connection": "keep-alive",
+    "DNT": "1",
+    "Priority": "u=0, i",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "same-origin",
+    "Sec-GPC": "1",
+    "Upgrade-Insecure-Requests": "1"
+  }
+}
+```
+
+**Configuration Options:**
+
+- **`enabled`** - Set to `false` to disable header spoofing and use default headers
+- **`headers`** - Custom HTTP headers to send with each request
+- **`notes`** - Optional field for documenting your customizations
+
+**Customizing Headers:**
+
+You can modify the headers to match different browsers or add custom headers:
+
+```json
+{
+  "enabled": true,
+  "headers": {
+    "User-Agent": "Your custom user agent string",
+    "Authorization": "Bearer your-token-if-needed",
+    "X-Custom-Header": "custom-value"
+  }
+}
+```
+
+**Disabling Spoofing:**
+
+If spoofing causes issues with certain sites, set `enabled` to `false`:
+
+```json
+{
+  "enabled": false,
+  "headers": {}
+}
+```
+
+The tool will then use basic Chrome-like headers instead.
 
 ### Themes
 
@@ -507,7 +610,8 @@ gatekeeper-cv/
 │   └── user/              # Custom themes (user-created)
 ├── user-info/             # User profiles and resumes
 ├── tests/                 # Test files
-└── job-sites.config.json  # Job board configurations
+├── job-sites.config.json  # Job board configurations
+└── spoof-headers.config.json  # Anti-scraping bypass headers
 ```
 
 ## License
