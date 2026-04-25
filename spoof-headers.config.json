@@ -1,0 +1,17 @@
+{
+  "enabled": true,
+  "headers": {
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:134.0) Gecko/20100101 Firefox/134.0",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.5",
+    "Connection": "keep-alive",
+    "DNT": "1",
+    "Priority": "u=0, i",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "same-origin",
+    "Sec-GPC": "1",
+    "Upgrade-Insecure-Requests": "1"
+  },
+  "notes": "These headers mimic a real Firefox browser to help bypass anti-scraping measures. Some job sites (LinkedIn, Indeed, Dice, etc.) may block requests without proper browser headers."
+}

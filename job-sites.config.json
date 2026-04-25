@@ -41,6 +41,63 @@
         "company": ".company-name, [data-testid='company-name']",
         "location": ".location, [data-testid='location']"
       }
+    },
+    "linkedin.com": {
+      "name": "LinkedIn",
+      "urlPattern": "https://www.linkedin.com/jobs/view/*",
+      "selectors": {
+        "title": "h1, .job-title, [data-testid='job-title'], .top-card-layout__title",
+        "description": ".job-description, .description, [data-testid='job-description'], .show-more-less-html__markup",
+        "company": ".company-name, [data-testid='company-name'], .topcard__org-name-link",
+        "location": ".location, [data-testid='location'], .topcard__flavor-row",
+        "salary": ".salary, [data-testid='salary'], .compensation__salary"
+      }
+    },
+    "dice.com": {
+      "name": "Dice",
+      "urlPattern": "https://www.dice.com/*",
+      "selectors": {
+        "title": "h1, .job-title, [data-testid='job-title'], .jobTitle",
+        "description": ".job-description, .description, [data-testid='job-description'], .companyDescription",
+        "company": ".company-name, [data-testid='company-name'], .companyName",
+        "location": ".location, [data-testid='location'], .locationText",
+        "salary": ".salary, [data-testid='salary'], .estimate",
+        "requirements": ".requirements, .qualifications, [data-testid='requirements'], .skills"
+      }
+    },
+    "indeed.com": {
+      "name": "Indeed",
+      "urlPattern": "https://www.indeed.com/*",
+      "selectors": {
+        "title": "h1, .job-title, [data-testid='job-title'], #jobTitle",
+        "description": ".job-description, .description, [data-testid='job-description'], #jobDescriptionText",
+        "company": ".company-name, [data-testid='company-name'], [data-testid='inlineHeader-companyName']",
+        "location": ".location, [data-testid='location'], [data-testid='inlineHeader-companyLocation']",
+        "salary": ".salary, [data-testid='salary'], .salary-snippet-container"
+      }
+    },
+    "ziprecruiter.com": {
+      "name": "ZipRecruiter",
+      "urlPattern": "https://www.ziprecruiter.com/*",
+      "selectors": {
+        "title": "h1, .job-title, [data-testid='job-title'], .job_title",
+        "description": ".job-description, .description, [data-testid='job-description'], .job_detail",
+        "company": ".company-name, [data-testid='company-name'], .company_name",
+        "location": ".location, [data-testid='location'], .job_location",
+        "salary": ".salary, [data-testid='salary'], .detail_salary"
+      }
+    },
+    "careerbuilder.com": {
+      "name": "CareerBuilder",
+      "urlPattern": "https://www.careerbuilder.com/*",
+      "selectors": {
+        "title": "h1, .job-title, [data-testid='job-title'], .data-detail-title",
+        "description": ".job-description, .description, [data-testid='job-description'], .description-section",
+        "company": ".company-name, [data-testid='company-name'], .data-details-brand",
+        "location": ".location, [data-testid='location'], .data-details-location",
+        "salary": ".salary, [data-testid='salary'], .data-details-salary",
+        "requirements": ".requirements, .qualifications, [data-testid='requirements']"
+      }
     }
   }
 }

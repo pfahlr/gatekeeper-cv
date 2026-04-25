@@ -210,3 +210,175 @@ describe('getUrlForFetching', () => {
     expect(result).toBe(regularUrl);
   });
 });
+
+describe('findJobSiteConfigForUrl - new job sites', () => {
+  const jobSitesConfig: JobSiteConfig = {
+    jobSites: {
+      'linkedin.com': {
+        name: 'LinkedIn',
+        urlPattern: 'https://www.linkedin.com/jobs/view/*',
+        selectors: {
+          title: 'h1',
+          description: '.job-description',
+        },
+      },
+      'dice.com': {
+        name: 'Dice',
+        urlPattern: 'https://www.dice.com/*',
+        selectors: {
+          title: 'h1',
+          description: '.job-description',
+        },
+      },
+      'indeed.com': {
+        name: 'Indeed',
+        urlPattern: 'https://www.indeed.com/*',
+        selectors: {
+          title: 'h1',
+          description: '.job-description',
+        },
+      },
+      'ziprecruiter.com': {
+        name: 'ZipRecruiter',
+        urlPattern: 'https://www.ziprecruiter.com/*',
+        selectors: {
+          title: 'h1',
+          description: '.job-description',
+        },
+      },
+      'careerbuilder.com': {
+        name: 'CareerBuilder',
+        urlPattern: 'https://www.careerbuilder.com/*',
+        selectors: {
+          title: 'h1',
+          description: '.job-description',
+        },
+      },
+    },
+  };
+
+  describe('linkedin.com', () => {
+    it('should match LinkedIn jobs URL', () => {
+      const result = findJobSiteConfigForUrl(
+        'https://www.linkedin.com/jobs/view/4398765018',
+        jobSitesConfig
+      );
+
+      expect(result).toBeDefined();
+      expect(result?.matchedDomain).toBe('linkedin.com');
+      expect(result?.siteConfig.name).toBe('LinkedIn');
+    });
+
+    it('should match LinkedIn web archive URL', () => {
+      const result = findJobSiteConfigForUrl(
+        'https://web.archive.org/web/20250101000000/https://www.linkedin.com/jobs/view/4398765018/',
+        jobSitesConfig
+      );
+
+      expect(result).toBeDefined();
+      expect(result?.matchedDomain).toBe('linkedin.com');
+    });
+  });
+
+  describe('dice.com', () => {
+    it('should match Dice job URL', () => {
+      const result = findJobSiteConfigForUrl(
+        'https://www.dice.com/job/detail/senior-developer-123456',
+        jobSitesConfig
+      );
+
+      expect(result).toBeDefined();
+      expect(result?.matchedDomain).toBe('dice.com');
+      expect(result?.siteConfig.name).toBe('Dice');
+    });
+
+    it('should match Dice web archive URL', () => {
+      const result = findJobSiteConfigForUrl(
+        'https://web.archive.org/web/20250101000000/https://www.dice.com/job/detail/123',
+        jobSitesConfig
+      );
+
+      expect(result).toBeDefined();
+      expect(result?.matchedDomain).toBe('dice.com');
+    });
+  });
+
+  describe('indeed.com', () => {
+    it('should match Indeed job URL', () => {
+      const result = findJobSiteConfigForUrl(
+        'https://www.indeed.com/viewjob?jk=1234567890abcdef',
+        jobSitesConfig
+      );
+
+      expect(result).toBeDefined();
+      expect(result?.matchedDomain).toBe('indeed.com');
+      expect(result?.siteConfig.name).toBe('Indeed');
+    });
+
+    it('should match Indeed web archive URL', () => {
+      const result = findJobSiteConfigForUrl(
+        'https://web.archive.org/web/20250101000000/https://www.indeed.com/viewjob?jk=123',
+        jobSitesConfig
+      );
+
+      expect(result).toBeDefined();
+      expect(result?.matchedDomain).toBe('indeed.com');
+    });
+
+    it('should match Indeed company pages URL', () => {
+      const result = findJobSiteConfigForUrl(
+        'https://www.indeed.com/cmp/Test-Company/jobs/Senior-Developer',
+        jobSitesConfig
+      );
+
+      expect(result).toBeDefined();
+      expect(result?.matchedDomain).toBe('indeed.com');
+    });
+  });
+
+  describe('ziprecruiter.com', () => {
+    it('should match ZipRecruiter job URL', () => {
+      const result = findJobSiteConfigForUrl(
+        'https://www.ziprecruiter.com/jobs/senior-developer-123456',
+        jobSitesConfig
+      );
+
+      expect(result).toBeDefined();
+      expect(result?.matchedDomain).toBe('ziprecruiter.com');
+      expect(result?.siteConfig.name).toBe('ZipRecruiter');
+    });
+
+    it('should match ZipRecruiter web archive URL', () => {
+      const result = findJobSiteConfigForUrl(
+        'https://web.archive.org/web/20250101000000/https://www.ziprecruiter.com/jobs/123',
+        jobSitesConfig
+      );
+
+      expect(result).toBeDefined();
+      expect(result?.matchedDomain).toBe('ziprecruiter.com');
+    });
+  });
+
+  describe('careerbuilder.com', () => {
+    it('should match CareerBuilder job URL', () => {
+      const result = findJobSiteConfigForUrl(
+        'https://www.careerbuilder.com/job/jkl1234567890abcdef',
+        jobSitesConfig
+      );
+
+      expect(result).toBeDefined();
+      expect(result?.matchedDomain).toBe('careerbuilder.com');
+      expect(result?.siteConfig.name).toBe('CareerBuilder');
+    });
+
+    it('should match CareerBuilder web archive URL', () => {
+      const result = findJobSiteConfigForUrl(
+        'https://web.archive.org/web/20250101000000/https://www.careerbuilder.com/job/123',
+        jobSitesConfig
+      );
+
+      expect(result).toBeDefined();
+      expect(result?.matchedDomain).toBe('careerbuilder.com');
+    });
+  });
+});
