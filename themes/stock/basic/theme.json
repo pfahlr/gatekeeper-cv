@@ -1,0 +1,23 @@
+{
+  "name": "basic",
+  "description": "A simple, clean text-based resume theme inspired by rickpfahl.com/resume. Minimal styling with clear section headings and bullet points.",
+  "resumes": [
+    {
+      "template": "resume.full.liquid",
+      "outputPath": "resume.full.html",
+      "styles": ["styles/resume.css"]
+    },
+    {
+      "template": "resume.short.liquid",
+      "outputPath": "resume.short.html",
+      "styles": ["styles/resume.css"]
+    }
+  ],
+  "coverLetters": [
+    {
+      "template": "cover-letter.liquid",
+      "outputPath": "cover-letter.html",
+      "styles": ["styles/resume.css"]
+    }
+  ]
+}

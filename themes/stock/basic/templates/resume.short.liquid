@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ profile.name }} - Resume</title>
+  <link rel="stylesheet" href="../styles/resume.css">
+</head>
+<body>
+  <div class="resume-container">
+    <header class="resume-header">
+      <h1>{{ profile.name }}</h1>
+      <div class="contact-info">
+        {% if profile.email %}<span class="contact-item">{{ profile.email }}</span>{% endif %}
+        {% if profile.phone %}<span class="contact-item">{{ profile.phone }}</span>{% endif %}
+        {% if profile.location %}<span class="contact-item">{{ profile.location }}</span>{% endif %}
+      </div>
+      <div class="contact-info">
+        {% if profile.website %}<span class="contact-item">{{ profile.website }}</span>{% endif %}
+        {% if profile.linkedin %}<span class="contact-item">{{ profile.linkedin }}</span>{% endif %}
+        {% if profile.github %}<span class="contact-item">{{ profile.github }}</span>{% endif %}
+      </div>
+    </header>
+
+    {% if resume.summary %}
+    <section class="resume-section">
+      <h2>Professional Summary</h2>
+      <p>{{ resume.summary }}</p>
+    </section>
+    {% endif %}
+
+    <section class="resume-section">
+      <h2>Skills</h2>
+      {% if resume.skills[0].category %}
+        {% comment %} Grouped skills {% endcomment %}
+        {% for group in resume.skills %}
+        <div class="skill-category">
+          <span class="skill-category-name"><strong>{{ group.name }}</strong>:</span>
+          <span class="skill-list">{{ group.items | join: ", " }}</span>
+        </div>
+        {% endfor %}
+      {% else %}
+        {% comment %} Flat skills list {% endcomment %}
+        <div class="skill-category">
+          <span class="skill-list">{{ resume.skills | join: ", " }}</span>
+        </div>
+      {% endif %}
+    </section>
+
+    {% if resume.experience and resume.experience.size > 0 %}
+    <section class="resume-section">
+      <h2>Work Experience</h2>
+      {% for job in resume.experience %}
+      <div class="experience-item">
+        <h3>{{ job.title }}</h3>
+        <h4>{{ job.company }}</h4>
+        {% if job.bullets and job.bullets.size > 0 %}
+        <ul class="bullets">
+          {% for bullet in job.bullets %}
+          <li>{{ bullet }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </section>
+    {% endif %}
+
+    <footer class="resume-footer">
+      <p>Last updated {% if metadata.generatedAt %}{{ metadata.generatedAt | date: "%d %B %Y" }}{% else %}{{ build.timestamp }}{% endif %}</p>
+    </footer>
+  </div>
+</body>
+</html>

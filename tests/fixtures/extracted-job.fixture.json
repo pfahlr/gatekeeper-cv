@@ -1,0 +1,14 @@
+{
+  "url": "https://example.com/jobs/senior-software-engineer-12345",
+  "title": "Senior Software Engineer",
+  "company": "Tech Innovations Inc.",
+  "location": "San Francisco, CA / Remote",
+  "employmentType": "Full-time",
+  "compensation": "$150,000 - $200,000",
+  "description": "We are seeking an experienced Senior Software Engineer to join our growing team. You will be responsible for designing and implementing scalable software solutions, mentoring junior developers, and contributing to technical architecture decisions.",
+  "requirements": "5+ years of experience in software development, proficiency in modern programming languages, experience with cloud platforms, strong problem-solving skills, excellent communication abilities",
+  "responsibilities": "Design and develop high-quality software solutions, collaborate with cross-functional teams, participate in code reviews, mentor junior engineers, contribute to architectural decisions, write clean and maintainable code",
+  "qualifications": "Bachelor's degree in Computer Science or related field, or equivalent experience, strong understanding of software engineering principles, experience with agile methodologies",
+  "benefits": "Competitive salary, equity package, health insurance, flexible PTO, remote work options, professional development budget, 401(k) matching",
+  "extractedAt": "2024-01-15T10:30:00Z"
+}

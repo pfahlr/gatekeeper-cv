@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cover Letter - {{ profile.name }}</title>
+  <link rel="stylesheet" href="../styles/resume.css">
+</head>
+<body>
+  <div class="resume-container">
+    <header class="cover-letter-header">
+      <h1>{{ profile.name }}</h1>
+      <div class="contact-info">
+        {% if profile.email %}<span class="contact-item">{{ profile.email }}</span>{% endif %}
+        {% if profile.phone %}<span class="contact-item">{{ profile.phone }}</span>{% endif %}
+        {% if profile.location %}<span class="contact-item">{{ profile.location }}</span>{% endif %}
+      </div>
+      <div class="contact-info">
+        {% if profile.website %}<span class="contact-item">{{ profile.website }}</span>{% endif %}
+        {% if profile.linkedin %}<span class="contact-item">{{ profile.linkedin }}</span>{% endif %}
+        {% if profile.github %}<span class="contact-item">{{ profile.github }}</span>{% endif %}
+      </div>
+    </header>
+
+    <article class="cover-letter-content">
+      {% if metadata.companyName %}
+      <p class="letter-meta">{{ metadata.generatedAt | date: "%d %B %Y" }}</p>
+      {% if metadata.companyName %}<p class="letter-meta">{{ metadata.companyName }}</p>{% endif %}
+      {% endif %}
+
+      {% if coverLetter.greeting %}
+      <p class="greeting">{{ coverLetter.greeting }}</p>
+      {% else %}
+      <p class="greeting">Dear Hiring Manager,</p>
+      {% endif %}
+
+      {% for paragraph in coverLetter.paragraphs %}
+      <p>{{ paragraph }}</p>
+      {% endfor %}
+
+      {% if coverLetter.closing %}
+      <p class="closing">{{ coverLetter.closing }}</p>
+      {% else %}
+      <p class="closing">Sincerely,</p>
+      {% endif %}
+
+      <p class="signature">{{ profile.name }}</p>
+    </article>
+  </div>
+</body>
+</html>
