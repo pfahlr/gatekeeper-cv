@@ -180,11 +180,12 @@ gatekeeper-cv build-docs [json-file] [theme-name] [output-directory] [options]
 
 **Arguments:**
 - `[json-file]` - JSON file containing LLM-generated content (optional - will prompt if not provided)
-- `[theme-name]` - Name of the theme to use (optional - defaults to `clean_professional`)
+- `[theme-name]` - Name of the theme to use (optional - will list available themes and prompt)
 - `[output-directory]` - Directory where output files will be written (optional - defaults to `./output`)
 
 **Options:**
 - `--profile <profile-name>` - Profile name to use (default: `default`)
+- `--variation <variation-name>` - Theme variation to use (if theme supports variations)
 
 **Interactive Mode:**
 
@@ -192,14 +193,17 @@ If you run `build-docs` without arguments, it will prompt you for the required v
 
 ```bash
 gatekeeper-cv build-docs
-# prompts for JSON file, theme name, and output directory
+# prompts for JSON file, theme name (lists available themes), variation (if theme has variations), and output directory
 ```
 
-**Example:**
+**Examples:**
 
 ```bash
 # All arguments provided
 gatekeeper-cv build-docs generated.json clean_professional ./output
+
+# Use a theme variation (neon color scheme)
+gatekeeper-cv build-docs generated.json basic ./output --variation neon
 
 # Interactive - prompts for missing values
 gatekeeper-cv build-docs
@@ -228,6 +232,10 @@ Defines your profiles, each with personal info, resume file, and optional prompt
       "summary": "Software engineer with expertise in...",
       "skills": ["JavaScript", "TypeScript", "Node.js", "React"],
       "resumeFile": "resumes/default.md",
+      "skillsGrouping": {
+        "enabled": true,
+        "categories": ["Languages", "Frameworks", "Databases", "Tools"]
+      },
       "promptPreferences": {
         "tone": "professional",
         "targetRoleTypes": ["software-engineer", "full-stack"],
@@ -237,6 +245,8 @@ Defines your profiles, each with personal info, resume file, and optional prompt
   }
 }
 ```
+
+**Skills Grouping**: When enabled, the LLM will organize your skills into categories instead of a flat list. Categories are automatically detected from your resume (formats like `**Category:** skill1, skill2` or `**Category** skill1, skill2`).
 
 ### Job Sites Configuration (`job-sites.config.json`)
 
@@ -269,16 +279,85 @@ If no configuration matches a URL, the tool uses a fallback extraction method th
 
 Themes define how your documents are rendered. Each theme includes:
 
-- `theme.json` - Theme configuration and template mappings
+- `theme.json` - Theme configuration, template mappings, and optional variations
 - `templates/*.liquid` - Liquid.js templates for different outputs
 - `styles/*.css` - CSS stylesheets
 
-The included `clean_professional` theme provides:
+#### Stock Themes
+
+**clean_professional** - A polished, modern theme with professional styling:
 - Two resume variants (full and short)
 - A standard cover letter
-- Professional styling
+- Clean typography and spacing
 
-You can create custom themes in `themes/user/` or modify the stock theme in `themes/stock/`.
+**basic** - A simple, text-based theme with minimal styling:
+- Two resume variants (full and short)
+- A cover letter
+- ■ bullet points and clear section headings
+
+#### Theme Variations
+
+Themes can define multiple style variations. For example, the `basic` theme includes:
+
+- **default** - Black and white styling
+- **neon** - Dark background with vibrant accent colors (inspired by cyberpunk aesthetics)
+
+Use the `--variation` option to select a variation:
+
+```bash
+gatekeeper-cv build-docs generated.json basic ./output --variation neon
+```
+
+If a theme has variations and you don't specify one, you'll be prompted to select from the available options.
+
+#### Creating Custom Themes
+
+You can create custom themes in `themes/user/your-theme-name/`:
+
+```
+themes/user/your-theme-name/
+├── theme.json          # Theme configuration
+├── templates/          # Liquid.js templates
+│   ├── resume.full.liquid
+│   ├── resume.short.liquid
+│   └── cover-letter.liquid
+└── styles/            # CSS files
+    ├── resume.css
+    └── variation.css  # Optional variation styles
+```
+
+Your `theme.json` can define variations like this:
+
+```json
+{
+  "name": "your-theme",
+  "description": "Your theme description",
+  "resumes": [
+    {
+      "template": "resume.full.liquid",
+      "outputPath": "resume.full.html",
+      "styles": ["styles/resume.css"]
+    }
+  ],
+  "coverLetters": [
+    {
+      "template": "cover-letter.liquid",
+      "outputPath": "cover-letter.html",
+      "styles": ["styles/resume.css"]
+    }
+  ],
+  "variations": {
+    "default": {
+      "description": "Default styling",
+      "styles": ["styles/resume.css"]
+    },
+    "alternate": {
+      "description": "Alternate color scheme",
+      "styles": ["styles/alternate.css"]
+    }
+  }
+}
+```
 
 ## Generated Content Format
 
@@ -288,7 +367,20 @@ When you use an LLM to generate content, it should return structured JSON data. 
 {
   "resume": {
     "summary": "Experienced software engineer with expertise in full-stack development...",
-    "skills": ["TypeScript", "JavaScript", "Node.js", "React", "Python"],
+    "skills": [
+      {
+        "category": "Languages",
+        "items": ["TypeScript", "JavaScript", "Python", "Go"]
+      },
+      {
+        "category": "Frameworks",
+        "items": ["React", "Vue.js", "Express", "FastAPI"]
+      },
+      {
+        "category": "Databases",
+        "items": ["PostgreSQL", "MongoDB", "Redis"]
+      }
+    ],
     "experience": [
       {
         "company": "Tech Company",
@@ -302,13 +394,28 @@ When you use an LLM to generate content, it should return structured JSON data. 
         ]
       }
     ],
+    "volunteering": [
+      {
+        "organization": "Code for America",
+        "title": "Volunteer Tech Lead",
+        "startDate": "2021-06-01T00:00:00Z",
+        "endDate": "2022-12-31T00:00:00Z",
+        "location": "Remote",
+        "bullets": [
+          "Led team of 5 volunteers developing web application",
+          "Organized monthly hackathons for civic tech engagement"
+        ]
+      }
+    ],
     "education": [
       {
         "institution": "University",
         "degree": "Bachelor of Science in Computer Science",
         "field": "Computer Science",
         "startDate": "2014-09-01T00:00:00Z",
-        "endDate": "2018-05-15T00:00:00Z"
+        "endDate": "2018-05-15T00:00:00Z",
+        "gpa": "3.8",
+        "bullets": ["Dean's List: Fall 2014 - Spring 2018", "CS Club President (2016-2017)"]
       }
     ],
     "projects": [
@@ -316,7 +423,8 @@ When you use an LLM to generate content, it should return structured JSON data. 
         "name": "Project Name",
         "description": "A web application for...",
         "technologies": ["React", "Node.js"],
-        "url": "https://github.com/user/project"
+        "url": "https://github.com/user/project",
+        "startDate": "2021-01-01T00:00:00Z"
       }
     ]
   },
@@ -337,12 +445,14 @@ When you use an LLM to generate content, it should return structured JSON data. 
 
 **Key points:**
 - `resume` is structured data, not formatted text
+- `skills` can be a flat array or grouped by category (with `category` and `items` fields)
 - Dates use ISO 8601 datetime format (e.g., `2020-01-15T00:00:00Z`)
 - `endDate: null` indicates current position
+- `volunteering` and `education` support optional `bullets` arrays for achievements
 - Themes control all formatting and presentation
 - Theme developers can structure HTML however they want
 
-The prompt generated by `prompt-generate` includes this schema in the instructions to the LLM.
+The prompt generated by `prompt-generate` includes this schema in the instructions to the LLM and will use grouped skills if enabled in your profile.
 
 ## Workflow Example
 
@@ -359,7 +469,11 @@ The prompt generated by `prompt-generate` includes this schema in the instructio
 5. **Render documents:**
 
    ```bash
+   # Using the clean_professional theme
    gatekeeper-cv build-docs generated.json clean_professional ./output
+
+   # Or use basic theme with neon variation
+   gatekeeper-cv build-docs generated.json basic ./output --variation neon
    ```
 
 6. **Review and edit** the generated HTML files in `./output/<timestamp>/`
