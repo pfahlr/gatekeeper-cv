@@ -4,7 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cover Letter - {{ profile.name }}</title>
-  <link rel="stylesheet" href="../styles/resume.css">
+  {% if outputStyles and outputStyles.size > 0 %}
+    {% for style in outputStyles %}
+  <link rel="stylesheet" href="{{ style }}">
+    {% endfor %}
+  {% else %}
+  <link rel="stylesheet" href="styles/resume.css">
+  {% endif %}
 </head>
 <body>
   <div class="resume-container">

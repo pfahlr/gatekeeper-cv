@@ -14,6 +14,7 @@ export interface BuildDocsParams {
   themeName: string;
   outputDirectory: string;
   profileName?: string;
+  variationName?: string;
 }
 
 export interface BuildDocsResult {
@@ -22,7 +23,7 @@ export interface BuildDocsResult {
 }
 
 export async function buildDocs(params: BuildDocsParams): Promise<BuildDocsResult> {
-  const { generatedJsonFile, themeName, outputDirectory, profileName } = params;
+  const { generatedJsonFile, themeName, outputDirectory, profileName, variationName } = params;
 
   // 1. Load generated JSON
   const jsonContent = await readFile(generatedJsonFile, 'utf-8');
@@ -32,14 +33,33 @@ export async function buildDocs(params: BuildDocsParams): Promise<BuildDocsResul
   // 2. Resolve theme
   const resolvedTheme = await resolveTheme(themeName);
 
-  // 3. Create timestamped output directory
+  // 3. Determine which variation to use
+  const selectedVariation = variationName || 'default';
+  const variation = resolvedTheme.config.variations?.[selectedVariation];
+
+  if (!variation && resolvedTheme.config.variations) {
+    throw new Error(`Variation "${selectedVariation}" not found in theme "${themeName}"`);
+  }
+
+  // 4. Apply variation styles to outputs
+  const resumesWithVariation = resolvedTheme.config.resumes.map((resume) => ({
+    ...resume,
+    styles: variation?.styles.length ? variation.styles : resume.styles,
+  }));
+
+  const coverLettersWithVariation = resolvedTheme.config.coverLetters.map((coverLetter) => ({
+    ...coverLetter,
+    styles: variation?.styles.length ? variation.styles : coverLetter.styles,
+  }));
+
+  // 5. Create timestamped output directory
   const timestamp = Date.now().toString();
   const buildDir = join(outputDirectory, timestamp);
   await mkdir(buildDir, { recursive: true });
 
   const generatedFiles: string[] = [];
 
-  // 4. Prepare render context (shared by all outputs)
+  // 6. Prepare render context (shared by all outputs)
   const context: RenderContext = {
     profile: content,
     selectedProfileName: profileName || 'default',
@@ -57,15 +77,21 @@ export async function buildDocs(params: BuildDocsParams): Promise<BuildDocsResul
     },
   };
 
-  // 5. Render all resume outputs
-  for (const resumeOutput of resolvedTheme.config.resumes) {
+  // 7. Render all resume outputs
+  for (const resumeOutput of resumesWithVariation) {
     const templatePath = getTemplatePath(resolvedTheme, resumeOutput.template);
 
     // Validate output path is safe
     const outputPath = join(buildDir, resumeOutput.outputPath);
     validateOutputPathSafe(buildDir, outputPath);
 
-    const rendered = await renderTemplate(templatePath, context, resolvedTheme.themePath);
+    // Create output-specific context with styles
+    const outputContext: RenderContext = {
+      ...context,
+      outputStyles: resumeOutput.styles || [],
+    };
+
+    const rendered = await renderTemplate(templatePath, outputContext, resolvedTheme.themePath);
 
     // Ensure output directory exists
     await mkdir(dirname(outputPath), { recursive: true });
@@ -74,15 +100,21 @@ export async function buildDocs(params: BuildDocsParams): Promise<BuildDocsResul
     generatedFiles.push(resumeOutput.outputPath);
   }
 
-  // 6. Render all cover letter outputs
-  for (const coverLetterOutput of resolvedTheme.config.coverLetters) {
+  // 8. Render all cover letter outputs
+  for (const coverLetterOutput of coverLettersWithVariation) {
     const templatePath = getTemplatePath(resolvedTheme, coverLetterOutput.template);
 
     // Validate output path is safe
     const outputPath = join(buildDir, coverLetterOutput.outputPath);
     validateOutputPathSafe(buildDir, outputPath);
 
-    const rendered = await renderTemplate(templatePath, context, resolvedTheme.themePath);
+    // Create output-specific context with styles
+    const outputContext: RenderContext = {
+      ...context,
+      outputStyles: coverLetterOutput.styles || [],
+    };
+
+    const rendered = await renderTemplate(templatePath, outputContext, resolvedTheme.themePath);
 
     // Ensure output directory exists
     await mkdir(dirname(outputPath), { recursive: true });
@@ -91,15 +123,15 @@ export async function buildDocs(params: BuildDocsParams): Promise<BuildDocsResul
     generatedFiles.push(coverLetterOutput.outputPath);
   }
 
-  // 7. Copy styles referenced by outputs
+  // 9. Copy styles referenced by outputs (using variation styles if specified)
   const { copiedStyles } = await copyThemeStyles(
     resolvedTheme,
-    resolvedTheme.config.resumes,
-    resolvedTheme.config.coverLetters,
+    resumesWithVariation,
+    coverLettersWithVariation,
     buildDir
   );
 
-  // 8. Copy assets if defined
+  // 10. Copy assets if defined
   await copyThemeAssets(resolvedTheme, buildDir);
 
   return {

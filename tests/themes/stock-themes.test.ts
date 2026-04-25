@@ -175,6 +175,24 @@ async function validateThemeConfig(themeName: string): Promise<{
       }
     }
 
+    // Validate variations if present
+    if (config.variations) {
+      // Check for default variation
+      if (!config.variations.default) {
+        errors.push('Theme variations must include a "default" variation');
+      }
+
+      // Check that all variation style files exist
+      for (const [variationName, variation] of Object.entries(config.variations)) {
+        for (const style of variation.styles || []) {
+          const stylePath = join(themePath, style);
+          if (!existsSync(stylePath)) {
+            errors.push(`Variation "${variationName}" style file not found: ${style}`);
+          }
+        }
+      }
+    }
+
     return { valid: errors.length === 0, errors };
   } catch (error) {
     errors.push(`Failed to resolve theme: ${error instanceof Error ? error.message : String(error)}`);
@@ -454,6 +472,72 @@ describe('Theme Validation Suite', () => {
 
             expect(exists).toBe(true);
           }
+        });
+
+        describe('Theme Variations', () => {
+          beforeEach(async () => {
+            tempDir = join(tmpdir(), `theme-variation-test-${themeName}-${Date.now()}`);
+            await mkdir(tempDir, { recursive: true });
+            jsonFile = join(tempDir, 'generated.json');
+            await writeFile(jsonFile, JSON.stringify(createTestContent(), null, 2));
+          });
+
+          it('should render with default variation when no variation is specified', async () => {
+            const theme = await resolveTheme(themeName);
+
+            // Only test variations if the theme has them
+            if (!theme.config.variations) {
+              return;
+            }
+
+            buildResult = await buildDocs({
+              generatedJsonFile: jsonFile,
+              themeName,
+              outputDirectory: join(tempDir, 'output'),
+            });
+
+            expect(buildResult.files.length).toBeGreaterThan(0);
+
+            // Verify default variation styles are applied
+            const defaultStyles = theme.config.variations.default.styles;
+            if (defaultStyles && defaultStyles.length > 0) {
+              const resumePath = join(buildResult.outputDirectory, buildResult.files[0]);
+              const html = await readFile(resumePath, 'utf-8');
+              expect(html).toContain(defaultStyles[0]);
+            }
+          });
+
+          it('should render with specified variation', async () => {
+            const theme = await resolveTheme(themeName);
+
+            // Only test variations if the theme has them
+            if (!theme.config.variations || Object.keys(theme.config.variations).length <= 1) {
+              return;
+            }
+
+            // Get a non-default variation
+            const variationName = Object.keys(theme.config.variations).find((v) => v !== 'default');
+            if (!variationName) {
+              return;
+            }
+
+            buildResult = await buildDocs({
+              generatedJsonFile: jsonFile,
+              themeName,
+              outputDirectory: join(tempDir, 'output'),
+              variationName,
+            });
+
+            expect(buildResult.files.length).toBeGreaterThan(0);
+
+            // Verify variation styles are applied
+            const variation = theme.config.variations[variationName];
+            if (variation.styles && variation.styles.length > 0) {
+              const resumePath = join(buildResult.outputDirectory, buildResult.files[0]);
+              const html = await readFile(resumePath, 'utf-8');
+              expect(html).toContain(variation.styles[0]);
+            }
+          });
         });
       });
     });

@@ -19,5 +19,15 @@
       "outputPath": "cover-letter.html",
       "styles": ["styles/resume.css"]
     }
-  ]
+  ],
+  "variations": {
+    "default": {
+      "description": "Default black and white styling",
+      "styles": ["styles/resume.css"]
+    },
+    "neon": {
+      "description": "Neon color scheme inspired by rickpfahl.com",
+      "styles": ["styles/neon.css"]
+    }
+  }
 }

@@ -2,6 +2,7 @@ import { buildDocs } from '../docs/build-docs.js';
 
 export interface BuildDocsOptions {
   profile?: string;
+  variation?: string;
 }
 
 export async function runBuildDocsCommand(
@@ -15,6 +16,7 @@ export async function runBuildDocsCommand(
     themeName,
     outputDirectory,
     profileName: options.profile,
+    variationName: options.variation,
   });
 
   // Extract just the directory name from the full path

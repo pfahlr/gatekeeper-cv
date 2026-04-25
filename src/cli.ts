@@ -4,6 +4,7 @@ import { runPromptGenerateCommand } from './commands/prompt-generate.js';
 import { runBuildDocsCommand } from './commands/build-docs.js';
 import { runSetupCommand, runEditSetupCommand } from './utils/profile-setup.js';
 import { prompt, promptMultiline, closePrompts } from './utils/prompts.js';
+import { listAvailableThemes } from './docs/resolve-theme.js';
 
 const program = new Command();
 
@@ -83,6 +84,7 @@ program.command('build-docs')
   .argument('[theme-name]', 'Name of the theme to use')
   .argument('[output-directory]', 'Directory where output files will be written')
   .option('--profile <profile-name>', 'Profile name to use')
+  .option('--variation <variation-name>', 'Theme variation to use')
   .action(async (jsonFile: string | undefined, themeName: string | undefined, outputDirectory: string | undefined, options) => {
     try {
       // Prompt for missing values
@@ -90,8 +92,35 @@ program.command('build-docs')
         jsonFile = await prompt('Generated JSON file');
       }
       if (!themeName) {
-        themeName = await prompt('Theme name', 'clean_professional');
+        const availableThemes = await listAvailableThemes();
+        if (availableThemes.length > 0) {
+          console.log(`\nAvailable themes: ${availableThemes.join(', ')}`);
+        }
+        themeName = await prompt('Theme name', availableThemes[0] || 'clean_professional');
       }
+
+      // Prompt for variation right after theme selection
+      if (!options.variation) {
+        const { resolveTheme } = await import('./docs/resolve-theme.js');
+        const resolvedTheme = await resolveTheme(themeName);
+        if (resolvedTheme.config.variations) {
+          const variations = Object.entries(resolvedTheme.config.variations);
+          if (variations.length > 1) {
+            console.log(`\nAvailable variations for theme "${themeName}":`);
+            variations.forEach(([name, config]) => {
+              const defaultMarker = name === 'default' ? ' (default)' : '';
+              const description = config.description ? ` - ${config.description}` : '';
+              console.log(`  - ${name}${defaultMarker}${description}`);
+            });
+            console.log('');
+
+            const variationNames = variations.map(([name]) => name);
+            const variationPrompt = `Select variation (${variationNames.join(', ')})`;
+            options.variation = await prompt(variationPrompt, 'default');
+          }
+        }
+      }
+
       if (!outputDirectory) {
         outputDirectory = await prompt('Output directory', './output');
       }

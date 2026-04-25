@@ -66,6 +66,21 @@ describe('buildDocs', () => {
       expect(result.files).toContain('resume.short.html');
     });
 
+    it('should build documents with theme variation', async () => {
+      await writeGeneratedContent(createMinimalGeneratedContent());
+
+      const result = await buildDocs({
+        generatedJsonFile: jsonFile,
+        themeName: 'basic',
+        outputDirectory: outputBaseDir,
+        variationName: 'neon',
+      });
+
+      expect(result.outputDirectory).toBeDefined();
+      expect(result.files).toBeDefined();
+      expect(result.files.length).toBeGreaterThan(0);
+    });
+
     it('should create output files that exist and contain HTML', async () => {
       await writeGeneratedContent(createMinimalGeneratedContent());
 
@@ -307,6 +322,61 @@ describe('buildDocs', () => {
           generatedJsonFile: jsonFile,
           themeName: 'clean_professional',
           outputDirectory: outputBaseDir,
+        })
+      ).rejects.toThrow();
+    });
+  });
+
+  describe('theme variations', () => {
+    it('should apply default variation when no variation is specified', async () => {
+      await writeGeneratedContent(createMinimalGeneratedContent());
+
+      const result = await buildDocs({
+        generatedJsonFile: jsonFile,
+        themeName: 'basic',
+        outputDirectory: outputBaseDir,
+      });
+
+      expect(result.files).toContain('resume.full.html');
+
+      // Check that default styles are referenced in output
+      const resumePath = join(result.outputDirectory, 'resume.full.html');
+      const html = await readFile(resumePath, 'utf-8');
+      expect(html).toContain('styles/resume.css');
+    });
+
+    it('should apply neon variation styles when specified', async () => {
+      await writeGeneratedContent(createMinimalGeneratedContent());
+
+      const result = await buildDocs({
+        generatedJsonFile: jsonFile,
+        themeName: 'basic',
+        outputDirectory: outputBaseDir,
+        variationName: 'neon',
+      });
+
+      expect(result.files).toContain('resume.full.html');
+
+      // Check that neon styles are referenced in output
+      const resumePath = join(result.outputDirectory, 'resume.full.html');
+      const html = await readFile(resumePath, 'utf-8');
+      expect(html).toContain('styles/neon.css');
+
+      // Verify neon.css file was copied
+      const neonCssPath = join(result.outputDirectory, 'styles/neon.css');
+      const neonCss = await readFile(neonCssPath, 'utf-8');
+      expect(neonCss).toContain('#f72585'); // Neon pink color
+    });
+
+    it('should throw error for invalid variation name', async () => {
+      await writeGeneratedContent(createMinimalGeneratedContent());
+
+      await expect(
+        buildDocs({
+          generatedJsonFile: jsonFile,
+          themeName: 'basic',
+          outputDirectory: outputBaseDir,
+          variationName: 'nonexistent',
         })
       ).rejects.toThrow();
     });

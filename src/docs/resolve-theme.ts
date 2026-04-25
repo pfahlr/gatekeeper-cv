@@ -1,8 +1,8 @@
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
-import { existsSync } from 'node:fs';
+import { existsSync, readdirSync } from 'node:fs';
 import { themeConfigSchema, type ThemeConfig } from '../schemas/theme.schema.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -14,6 +14,51 @@ export interface ResolvedTheme {
   name: string;
   config: ThemeConfig;
   themePath: string;
+}
+
+/**
+ * Lists all available themes from both stock and user directories
+ */
+export async function listAvailableThemes(): Promise<string[]> {
+  const themes: string[] = [];
+
+  // List stock themes
+  const stockThemesPath = resolve(PROJECT_ROOT, 'themes/stock');
+  if (existsSync(stockThemesPath)) {
+    try {
+      const stockDirs = await readdir(stockThemesPath, { withFileTypes: true });
+      for (const dir of stockDirs) {
+        if (dir.isDirectory()) {
+          const themeJsonPath = resolve(stockThemesPath, dir.name, 'theme.json');
+          if (existsSync(themeJsonPath)) {
+            themes.push(dir.name);
+          }
+        }
+      }
+    } catch {
+      // Ignore errors reading stock themes
+    }
+  }
+
+  // List user themes
+  const userThemesPath = resolve(PROJECT_ROOT, 'themes/user');
+  if (existsSync(userThemesPath)) {
+    try {
+      const userDirs = await readdir(userThemesPath, { withFileTypes: true });
+      for (const dir of userDirs) {
+        if (dir.isDirectory()) {
+          const themeJsonPath = resolve(userThemesPath, dir.name, 'theme.json');
+          if (existsSync(themeJsonPath)) {
+            themes.push(dir.name);
+          }
+        }
+      }
+    } catch {
+      // Ignore errors reading user themes
+    }
+  }
+
+  return themes.sort();
 }
 
 export async function resolveTheme(themeName: string): Promise<ResolvedTheme> {

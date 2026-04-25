@@ -20,6 +20,7 @@ export interface RenderContext {
     timestamp: string;
     outputDirectory: string;
   };
+  outputStyles?: string[]; // Styles for the current output
 }
 
 export async function renderTemplate(

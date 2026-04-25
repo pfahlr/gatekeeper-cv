@@ -4,7 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ profile.name }} - Resume</title>
-  <link rel="stylesheet" href="../styles/resume.css">
+  {% if outputStyles and outputStyles.size > 0 %}
+    {% for style in outputStyles %}
+  <link rel="stylesheet" href="{{ style }}">
+    {% endfor %}
+  {% else %}
+  <link rel="stylesheet" href="styles/resume.css">
+  {% endif %}
 </head>
 <body>
   <div class="resume-container">
@@ -35,7 +41,7 @@
         {% comment %} Grouped skills {% endcomment %}
         {% for group in resume.skills %}
         <div class="skill-category">
-          <span class="skill-category-name"><strong>{{ group.name }}</strong>:</span>
+          <span class="skill-category-name"><strong>{{ group.category }}</strong>:</span>
           <span class="skill-list">{{ group.items | join: ", " }}</span>
         </div>
         {% endfor %}
