@@ -5,6 +5,7 @@ import { runBuildDocsCommand } from './commands/build-docs.js';
 import { runSetupCommand, runEditSetupCommand } from './utils/profile-setup.js';
 import { prompt, promptMultiline, closePrompts } from './utils/prompts.js';
 import { listAvailableThemes } from './docs/resolve-theme.js';
+import { loadBuildState, saveBuildState, type BuildState } from './utils/build-state.js';
 
 const program = new Command();
 
@@ -87,16 +88,19 @@ program.command('build-docs')
   .option('--variation <variation-name>', 'Theme variation to use')
   .action(async (jsonFile: string | undefined, themeName: string | undefined, outputDirectory: string | undefined, options) => {
     try {
+      // Load previous state for defaults
+      const state: BuildState = await loadBuildState();
+
       // Prompt for missing values
       if (!jsonFile) {
-        jsonFile = await prompt('Generated JSON file');
+        jsonFile = await prompt('Generated JSON file', state.lastJsonFile);
       }
       if (!themeName) {
         const availableThemes = await listAvailableThemes();
         if (availableThemes.length > 0) {
           console.log(`\nAvailable themes: ${availableThemes.join(', ')}`);
         }
-        themeName = await prompt('Theme name', availableThemes[0] || 'clean_professional');
+        themeName = await prompt('Theme name', state.lastTheme || availableThemes[0] || 'clean_professional');
       }
 
       // Prompt for variation right after theme selection
@@ -116,19 +120,28 @@ program.command('build-docs')
 
             const variationNames = variations.map(([name]) => name);
             const variationPrompt = `Select variation (${variationNames.join(', ')})`;
-            options.variation = await prompt(variationPrompt, 'default');
+            options.variation = await prompt(variationPrompt, state.lastVariation || 'default');
           }
         }
       }
 
       if (!outputDirectory) {
-        outputDirectory = await prompt('Output directory', './output');
+        outputDirectory = await prompt('Output directory', state.lastOutputDirectory || './output');
       }
       if (!options.profile) {
-        options.profile = await prompt('Profile name', 'default');
+        options.profile = await prompt('Profile name', state.lastProfile || 'default');
       }
 
       await runBuildDocsCommand(jsonFile, themeName, outputDirectory, options);
+
+      // Save state for next time
+      await saveBuildState({
+        lastJsonFile: jsonFile,
+        lastTheme: themeName,
+        lastOutputDirectory: outputDirectory,
+        lastProfile: options.profile,
+        lastVariation: options.variation,
+      });
     } finally {
       closePrompts();
     }

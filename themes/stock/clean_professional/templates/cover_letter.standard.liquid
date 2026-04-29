@@ -4,47 +4,58 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cover Letter - {{ profile.name }}</title>
-  <link rel="stylesheet" href="../styles/cover_letter.css">
+  {% if outputStyles and outputStyles.size > 0 %}
+    {% for style in outputStyles %}
+  <link rel="stylesheet" href="{{ style }}">
+    {% endfor %}
+  {% else %}
+  <link rel="stylesheet" href="styles/resume.css">
+  {% endif %}
 </head>
 <body>
-  <div class="cover-letter-container">
-    <header class="cover-letter-header">
-      <p class="letter-meta">{{ profile.name }}</p>
-      {% if profile.email %}
-      <p class="letter-meta">{{ profile.email }}</p>
-      {% endif %}
-      {% if profile.phone %}
-      <p class="letter-meta">{{ profile.phone }}</p>
-      {% endif %}
-      {% if profile.location %}
-      <p class="letter-meta">{{ profile.location }}</p>
-      {% endif %}
-      <p class="letter-meta">{% if metadata.generatedAt %}{{ metadata.generatedAt | date: "%B %d, %Y" }}{% else %}{{ build.timestamp | date: "%B %d, %Y" }}{% endif %}</p>
-    </header>
+  <div class="resume-container">
+    <article class="cover-letter-content">
+      <!-- Sender Address -->
+      <div class="sender-address">
+        <p>{{ profile.name }}</p>
+        {% if profile.location %}<p>{{ profile.location }}</p>{% endif %}
+      </div>
 
-    <main class="cover-letter-content">
+      <!-- Date -->
+      <p class="letter-date">{{ metadata.currentDate }}</p>
+
+      <!-- Recipient Address -->
+      <div class="recipient-address">
+        {% if metadata.companyName %}<p>{{ metadata.companyName }}</p>{% endif %}
+      </div>
+
+      <!-- Salutation -->
       {% if coverLetter.greeting %}
       <p class="greeting">{{ coverLetter.greeting }}</p>
       {% else %}
       <p class="greeting">Dear Hiring Manager,</p>
       {% endif %}
 
+      <!-- Body Paragraphs -->
       {% for paragraph in coverLetter.paragraphs %}
       <p class="letter-paragraph">{{ paragraph }}</p>
       {% endfor %}
 
+      <!-- Closing -->
       {% if coverLetter.closing %}
       <p class="closing">{{ coverLetter.closing }}</p>
       {% else %}
       <p class="closing">Sincerely,</p>
       {% endif %}
 
-      <p class="signature">{{ profile.name }}</p>
-    </main>
-
-    <footer class="cover-letter-footer">
-      <p><em>Application for: {{ metadata.jobTitle }}</em>{% if metadata.companyName %} at {{ metadata.companyName }}{% endif %}</p>
-    </footer>
+      <!-- Signature Block with 4 blank lines for physical signature -->
+      <div class="signature-block">
+        <br><br><br><br>
+        <p class="signature-name">{{ profile.name }}</p>
+        {% if profile.email %}<p class="signature-contact">{{ profile.email }}</p>{% endif %}
+        {% if profile.phone %}<p class="signature-contact">{{ profile.phone }}</p>{% endif %}
+      </div>
+    </article>
   </div>
 </body>
 </html>

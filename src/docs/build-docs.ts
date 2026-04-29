@@ -8,6 +8,17 @@ import { copyThemeStyles } from './copy-theme-styles.js';
 import { validateOutputPathSafe } from './copy-theme-assets.js';
 import type { ThemeConfig } from '../schemas/theme.schema.js';
 import { generatedContentSchema } from '../schemas/generated-content.schema.js';
+import { loadUserProfileConfig } from '../config/load-user-profile.js';
+import { resolveProfile } from '../config/resolve-profile.js';
+
+function formatCurrentDate(): string {
+  const now = new Date();
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const month = months[now.getMonth()];
+  const day = now.getDate();
+  const year = now.getFullYear();
+  return `${month} ${day}, ${year}`;
+}
 
 export interface BuildDocsParams {
   generatedJsonFile: string;
@@ -53,15 +64,20 @@ export async function buildDocs(params: BuildDocsParams): Promise<BuildDocsResul
   }));
 
   // 5. Create timestamped output directory
-  const timestamp = Date.now().toString();
-  const buildDir = join(outputDirectory, timestamp);
+  const timestampMs = Date.now().toString();
+  const timestamp = Math.floor(Date.now() / 1000).toString(); // Unix timestamp in seconds for Liquid date filter
+  const buildDir = join(outputDirectory, timestampMs);
   await mkdir(buildDir, { recursive: true });
 
   const generatedFiles: string[] = [];
 
-  // 6. Prepare render context (shared by all outputs)
+  // 6. Load user profile for template rendering
+  const { config: userConfig } = await loadUserProfileConfig();
+  const { profile: userProfile } = resolveProfile(userConfig, profileName);
+
+  // 7. Prepare render context (shared by all outputs)
   const context: RenderContext = {
-    profile: content,
+    profile: userProfile,
     selectedProfileName: profileName || 'default',
     resume: content.resume,
     coverLetter: content.coverLetter,
@@ -69,6 +85,7 @@ export async function buildDocs(params: BuildDocsParams): Promise<BuildDocsResul
       jobTitle: content.jobTitle,
       companyName: content.companyName,
       generatedAt: content.generatedAt,
+      currentDate: formatCurrentDate(), // Current date in "Month DD, YYYY" format
     },
     theme: resolvedTheme.config,
     build: {
@@ -77,7 +94,7 @@ export async function buildDocs(params: BuildDocsParams): Promise<BuildDocsResul
     },
   };
 
-  // 7. Render all resume outputs
+  // 8. Render all resume outputs
   for (const resumeOutput of resumesWithVariation) {
     const templatePath = getTemplatePath(resolvedTheme, resumeOutput.template);
 
@@ -100,7 +117,7 @@ export async function buildDocs(params: BuildDocsParams): Promise<BuildDocsResul
     generatedFiles.push(resumeOutput.outputPath);
   }
 
-  // 8. Render all cover letter outputs
+  // 9. Render all cover letter outputs
   for (const coverLetterOutput of coverLettersWithVariation) {
     const templatePath = getTemplatePath(resolvedTheme, coverLetterOutput.template);
 
@@ -123,7 +140,7 @@ export async function buildDocs(params: BuildDocsParams): Promise<BuildDocsResul
     generatedFiles.push(coverLetterOutput.outputPath);
   }
 
-  // 9. Copy styles referenced by outputs (using variation styles if specified)
+  // 10. Copy styles referenced by outputs (using variation styles if specified)
   const { copiedStyles } = await copyThemeStyles(
     resolvedTheme,
     resumesWithVariation,
@@ -131,7 +148,7 @@ export async function buildDocs(params: BuildDocsParams): Promise<BuildDocsResul
     buildDir
   );
 
-  // 10. Copy assets if defined
+  // 11. Copy assets if defined
   await copyThemeAssets(resolvedTheme, buildDir);
 
   return {
