@@ -186,6 +186,7 @@ describe('isWeakExtraction', () => {
     const goodJob = {
       url: 'https://example.com/job',
       title: 'Test',
+      company: 'Test Company',
       description: 'This is a substantial description that is long enough to be considered good extraction. '.repeat(15).trim(),
       rawText: 'This is a much longer raw text content that should demonstrate good extraction with sufficient length. '.repeat(5).trim(),
       extractedAt: new Date().toISOString(),
@@ -198,6 +199,7 @@ describe('isWeakExtraction', () => {
     const job = {
       url: 'https://example.com/job',
       title: 'Test',
+      company: 'Test Company',
       description: 'Short description.',
       extractedAt: new Date().toISOString(),
     };

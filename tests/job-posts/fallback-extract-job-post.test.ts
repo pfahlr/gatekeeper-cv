@@ -188,6 +188,7 @@ describe('isWeakExtraction (re-exported)', () => {
     const goodJob = {
       url: 'https://example.com/job',
       title: 'Test',
+      company: 'Test Company',
       description: 'This is a substantial description. '.repeat(15).trim(),
       rawText: 'This is a longer raw text. '.repeat(10).trim(),
       extractedAt: new Date().toISOString(),

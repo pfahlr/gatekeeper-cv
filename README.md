@@ -129,6 +129,29 @@ gatekeeper-cv prompt-generate [job-post-url] [options]
 - `--description <text>` - Job description (use if fetching fails - paste the description directly)
 - `--title <text>` - Job title (use with `--description`)
 - `--company <text>` - Company name (use with `--description`)
+- `--temperature <number>` - Temperature for AI generation, 0-100 (overrides profile default)
+
+**Temperature Setting:**
+
+The temperature controls how closely the AI adheres to your source resume vs. the job posting terminology:
+- Lower values (0-30): Stick closer to your source resume skills
+- Higher values (70-100): More willing to use job posting terminology and make inferences
+- Default: 50 (balanced approach)
+
+You can set a default temperature in your profile (`user-info/profile.json`):
+
+```json
+{
+  "profiles": {
+    "default": {
+      "temperature": 50,
+      ...
+    }
+  }
+}
+```
+
+When running `prompt-generate` interactively, you'll be prompted for temperature if not specified via CLI.
 
 **Interactive Mode:**
 
@@ -169,6 +192,15 @@ gatekeeper-cv prompt-generate https://www.monster.com/job/example \
 ```
 
 **Note:** Some job boards (Monster, Indeed, etc.) block automated requests. If you encounter a 403 error, use the `--description` option to paste the job posting content directly. Always quote URLs containing special characters like `?` and `&`.
+
+**Company Address Lookup:**
+
+When generating a prompt, the tool will automatically search for the company's corporate address:
+- If found, the address is included in the prompt and will appear in cover letter templates
+- If not found, you'll be prompted to enter an address manually (interactive mode only)
+- Addresses are validated to ensure they include a street address, city, state, and ZIP code
+
+The company address is included in the generated JSON and used by cover letter templates to display the recipient's address.
 
 ### `build-docs`
 
@@ -231,6 +263,7 @@ Defines your profiles, each with personal info, resume file, and optional prompt
       "github": "github.com/yourusername",
       "summary": "Software engineer with expertise in...",
       "skills": ["JavaScript", "TypeScript", "Node.js", "React"],
+      "temperature": 50,
       "resumeFile": "resumes/default.md",
       "skillsGrouping": {
         "enabled": true,
@@ -247,6 +280,13 @@ Defines your profiles, each with personal info, resume file, and optional prompt
 ```
 
 **Skills Grouping**: When enabled, the LLM will organize your skills into categories instead of a flat list. Categories are automatically detected from your resume (formats like `**Category:** skill1, skill2` or `**Category** skill1, skill2`).
+
+**Temperature**: Controls the AI's creativity when tailoring your resume (0-100):
+- **0-30**: Conservative - sticks closely to your source resume, minimal interpretation
+- **40-60**: Balanced - uses job posting terminology while respecting your experience
+- **70-100**: Aggressive - more willing to infer skills and rephrase experience
+
+This affects how the AI matches your skills to job posting terminology and whether it will include related skills not explicitly listed in your resume.
 
 ### Job Sites Configuration (`job-sites.config.json`)
 
@@ -541,6 +581,9 @@ When you use an LLM to generate content, it should return structured JSON data. 
   },
   "jobTitle": "Software Engineer",
   "companyName": "Tech Company",
+  "companyAddress": "123 Main Street, Suite 100, San Francisco, CA 94102",
+  "jobLocation": "San Francisco, CA (Remote)",
+  "employmentType": "Full-time",
   "generatedAt": "2024-01-15T10:30:00Z",
   "notes": "Emphasized cloud-native experience and team leadership."
 }
@@ -552,6 +595,8 @@ When you use an LLM to generate content, it should return structured JSON data. 
 - Dates use ISO 8601 datetime format (e.g., `2020-01-15T00:00:00Z`)
 - `endDate: null` indicates current position
 - `volunteering` and `education` support optional `bullets` arrays for achievements
+- Job metadata fields (`jobTitle`, `companyName`, `companyAddress`, `jobLocation`, `employmentType`) are copied from the job posting and used by cover letter templates
+- `companyAddress` appears in cover letter recipient address if available
 - Themes control all formatting and presentation
 - Theme developers can structure HTML however they want
 
