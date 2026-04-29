@@ -35,12 +35,44 @@ export function fallbackExtractJobPost(params: FallbackExtractParams): Extracted
 
   // Extract title - try multiple fallbacks
   let title = '';
+  let company = '';
   const h1Text = $('h1').first().text();
   if (h1Text.trim()) {
     title = normalizeWhitespace(h1Text);
   } else {
     const titleText = $('title').text();
     title = normalizeWhitespace(titleText).replace(/^[|-]\s*/, '').split('|')[0].split('-')[0].trim();
+  }
+
+  // Try to extract company from title (look for patterns like "at CompanyName" or "| CompanyName")
+  const titleText = $('title').text() || h1Text;
+  const companyPatterns = [
+    // Match: "Job Title - Company Name | Job Board"
+    /\s+-\s+([A-Z][A-Za-z0-9\s&]+?)\s+\|\s+/,
+    // Match: "Job Title at Company Name |"
+    /\s+at\s+([A-Z][A-Za-z0-9\s&]+?)(?:\s+\||\s*$)/i,
+    // Match: "| Company Name |" at end
+    /\s+\|\s+([A-Z][A-Za-z0-9\s&]+?)\s+\|\s+/,
+  ];
+
+  for (const pattern of companyPatterns) {
+    const match = titleText.match(pattern);
+    if (match) {
+      const potentialCompany = match[1].trim();
+      // Filter out common non-company words and job board names
+      const jobBoardNames = ['careerbuilder', 'indeed', 'monster', 'ziprecruiter', 'dice', 'linkedin', 'glassdoor', 'apply', 'today'];
+      if (potentialCompany &&
+          !jobBoardNames.some(board => potentialCompany.toLowerCase().includes(board)) &&
+          !potentialCompany.toLowerCase().includes('apply') &&
+          !potentialCompany.toLowerCase().includes('today') &&
+          !potentialCompany.toLowerCase().includes('job') &&
+          !potentialCompany.toLowerCase().includes('remote') &&
+          !potentialCompany.toLowerCase().includes('careers') &&
+          potentialCompany.length > 2) {
+        company = potentialCompany;
+        break;
+      }
+    }
   }
 
   // Extract body text as raw text
@@ -80,6 +112,7 @@ export function fallbackExtractJobPost(params: FallbackExtractParams): Extracted
     sourceUrl: url,
     sourceDomain,
     title: title || 'Job Posting',
+    company: company || undefined,
     description: description || rawText || 'No description available',
     rawText,
     extractedAt: new Date().toISOString(),
@@ -98,5 +131,8 @@ export function isWeakExtraction(job: ExtractedJob): boolean {
   // Weak if raw text is very short
   const weakByShortRaw = rawLength < 200 && rawLength > 0;
 
-  return weakByLength || weakByShortRaw;
+  // Weak if company is missing (fallback can extract from title)
+  const weakByNoCompany = !job.company || job.company.trim().length === 0;
+
+  return weakByLength || weakByShortRaw || weakByNoCompany;
 }

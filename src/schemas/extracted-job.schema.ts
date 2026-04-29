@@ -6,6 +6,7 @@ export const extractedJobSchema = z.object({
   sourceDomain: z.string().optional(),
   title: z.string(),
   company: z.string().optional(),
+  companyAddress: z.string().optional(),
   location: z.string().optional(),
   employmentType: z.string().optional(),
   compensation: z.string().optional(),

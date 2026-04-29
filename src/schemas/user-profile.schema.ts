@@ -25,6 +25,7 @@ export const profileSchema = z.object({
   skillsGrouping: skillsGroupingSchema.optional(),
   summary: z.string().optional(),
   promptPreferences: promptPreferencesSchema.optional(),
+  temperature: z.number().min(0).max(100).default(50),
 });
 
 export const userProfileSchema = z

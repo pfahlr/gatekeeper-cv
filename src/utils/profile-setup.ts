@@ -143,6 +143,7 @@ async function promptForProfile(
         description: 'Main resume',
       },
     },
+    temperature: existing?.temperature ?? 50,
   };
 }
 

@@ -9,10 +9,11 @@ export interface BuildPromptParams {
   selectedProfileName: string;
   resumeMarkdown: string;
   promptPreferences: ResolvedPromptPreferences;
+  temperature: number;
 }
 
 export function buildResumeCoverLetterPrompt(params: BuildPromptParams): string {
-  const { extractedJob, profile, selectedProfileName, resumeMarkdown, promptPreferences } =
+  const { extractedJob, profile, selectedProfileName, resumeMarkdown, promptPreferences, temperature } =
     params;
 
   const sections: string[] = [];
@@ -27,7 +28,7 @@ export function buildResumeCoverLetterPrompt(params: BuildPromptParams): string 
   sections.push('4. Build the resume skills section from the job posting terminology first, not from the source resume terminology.\n Skill Normalization Rules:\n - If the job posting uses a specific skill name, phrase, spelling, acronym, or format, use the job posting’s version in the output whenever the source resume contains the same or equivalent skill.\n- Do not simply copy the source resume skills section.\n- Translate source resume skills into job-posting language where appropriate.\n  Examples:\n - "REST APIs" in the source resume should become "RESTful APIs" if the job posting says "RESTful APIs".\n - "MVC" in the source resume should become "MVC frameworks" if the job posting says "MVC frameworks".\n - "Coding standards" and PHP/Laravel/Symfony experience may support "OOP" or "Object-Oriented Programming" when the temperature allows same-discipline inferred skills.\n - "Version Control Systems, Git" should become "Git" or "version control systems such as Git" if that matches the job posting.\n - "Debugging and testing" should become "debugging", "testing", or "debugging and performance optimization" if those appear in the job posting.\n - "Oral and written communications" should become "excellent written and verbal communication skills" only if the temperature allows phrasing alignment.\n Skill Selection Rules:\n - Prioritize skills that appear in the job posting.\n - Include source-resume skills that are not in the job posting only if they strengthen the candidate’s fit.\n - Omit unrelated or low-relevance source skills from the tailored resume.\n - The final skills section should look like it was written for this specific job posting, not copied from the master resume.');
   sections.push('5.Temperature Application Rules:\n Use the temperature value only after extracting job-posting skills.\n\n At Temperature 50:\n - You may include exact skills from the source resume.\n - You may rename source skills to match equivalent job-posting terms.\n - You may include directly implied same-discipline skills when strongly supported by the source resume.\n - You may include adjacent framework names only when the source resume already shows comparable experience in the same web-development discipline.\n - Do not claim professional experience with tools, platforms, or specialties that are not listed or reasonably implied by the source resume.\n\n For every skill added that does not appear verbatim in the source resume, it must be one of:\n 1. A formatting/spelling normalization.\n 2. A job-posting synonym for an equivalent source skill.\n 3. A same-discipline inferred skill allowed by the temperature.');
   sections.push('');
-  sections.push('Temperature: 50')
+  sections.push(`Temperature: ${temperature}`);
   sections.push('');
 
   // 2. Output rules
@@ -97,11 +98,25 @@ export function buildResumeCoverLetterPrompt(params: BuildPromptParams): string 
     "paragraphs": string[],
     "closing": string (optional)
   },
-  "jobTitle": string (optional),
-  "companyName": string (optional),
+  "jobTitle": string (copy from job posting),
+  "companyName": string (copy from job posting),
+  "companyAddress": string (copy from job posting if available),
+  "jobLocation": string (copy from job posting),
+  "employmentType": string (copy from job posting if available),
   "generatedAt": string (ISO 8601 datetime, optional),
   "notes": string (optional)
 }`);
+  sections.push('');
+
+  // 5. Job metadata requirements
+  sections.push('Job Metadata Requirements:');
+  sections.push('You MUST copy these fields from the Job Posting Information directly into your output JSON:');
+  sections.push('- jobTitle: Copy exactly from the job posting title');
+  sections.push('- companyName: Copy exactly from the job posting company');
+  sections.push('- companyAddress: Copy from the job posting company address (if available)');
+  sections.push('- jobLocation: Copy from the job posting location');
+  sections.push('- employmentType: Copy from the job posting employment type (if available)');
+  sections.push('Do not modify, summarize, or rephrase these values. Copy them exactly as provided.');
   sections.push('');
 
   // 5. Selected profile summary
@@ -144,6 +159,7 @@ export function buildResumeCoverLetterPrompt(params: BuildPromptParams): string 
   sections.push(`  URL: ${extractedJob.url}`);
   sections.push(`  Title: ${extractedJob.title}`);
   if (extractedJob.company) sections.push(`  Company: ${extractedJob.company}`);
+  if (extractedJob.companyAddress) sections.push(`  Company Address: ${extractedJob.companyAddress}`);
   if (extractedJob.location) sections.push(`  Location: ${extractedJob.location}`);
   if (extractedJob.employmentType) sections.push(`  Employment Type: ${extractedJob.employmentType}`);
   if (extractedJob.compensation) sections.push(`  Compensation: ${extractedJob.compensation}`);

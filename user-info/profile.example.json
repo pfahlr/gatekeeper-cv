@@ -27,7 +27,8 @@
         "enabled": false,
         "categories": []
       },
-      "summary": "A software engineer with experience building scalable applications."
+      "summary": "A software engineer with experience building scalable applications.",
+      "temperature": 50
     }
   }
 }

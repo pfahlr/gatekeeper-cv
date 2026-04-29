@@ -84,6 +84,9 @@ export async function buildDocs(params: BuildDocsParams): Promise<BuildDocsResul
     metadata: {
       jobTitle: content.jobTitle,
       companyName: content.companyName,
+      companyAddress: content.companyAddress,
+      jobLocation: content.jobLocation,
+      employmentType: content.employmentType,
       generatedAt: content.generatedAt,
       currentDate: formatCurrentDate(), // Current date in "Month DD, YYYY" format
     },

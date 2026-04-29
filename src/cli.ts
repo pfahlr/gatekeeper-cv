@@ -36,6 +36,7 @@ program.command('prompt-generate')
   .option('--description <text>', 'Job description (if fetching fails, paste the description here)')
   .option('--title <text>', 'Job title (use with --description)')
   .option('--company <text>', 'Company name (use with --description)')
+  .option('--temperature <number>', 'Temperature for AI generation (0-100, overrides profile default)')
   .action(async (jobPostUrl: string | undefined, options) => {
     try {
       // Prompt for missing URL
