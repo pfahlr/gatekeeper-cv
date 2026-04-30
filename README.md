@@ -662,3 +662,7 @@ gatekeeper-cv/
 ## License
 
 MIT
+
+---
+
+caveat emptor
